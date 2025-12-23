@@ -11,6 +11,14 @@
     "ios": {
       "supportsTablet": true
     },
+    "splash" : {
+      "image" : "./assets/splash.png",
+      "resizeMode" : "contain",
+      "backgroundColor" : "#ffffff"
+    },
+    "assetBundlePatterns" : [
+        "**/*"
+    ],
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -19,11 +27,16 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions" : [
+         "ACCESS_FINE_LOCATION",
+         "CAMERA"
+       ]
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler" : "metro"
     },
     "plugins": [
       "expo-router",
@@ -40,6 +53,9 @@
         }
       ],
       "expo-sqlite",
+      {
+         "enableFTS" : true
+      },
       "expo-secure-store"
     ],
     "experiments": {
