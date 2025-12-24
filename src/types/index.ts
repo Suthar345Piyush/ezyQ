@@ -109,13 +109,13 @@ export interface CreateQueueEntryDTO {
 
 
 // queue history types  
-
+// time in minutes 
 export interface QueueHistory {
    id : number;
    queue_id : string;
    user_id : string;
    ticket_number : number;
-   wait_time : number;
+   wait_time : number; 
    service_time : number;
    status : string;
    joined_at : number;
@@ -124,7 +124,114 @@ export interface QueueHistory {
    feedback? : string;
 }
 
+// Notification types  
 
+export interface Notification {
+    id : string;
+    user_id : string;
+    title : string;
+    message : string;
+    type : 'queue_joined' | 'position_update' | 'called' | 'cancelled' | 'general';
+    data?: string;
+    is_read:number;     // sqlite boolean 
+    created_at : number;
+}
+
+
+// business settings type  
+
+export interface BusinessSettings {
+     id : string;
+     business_id : string;
+     operating_hours? : string;
+     notification_enabled : number;
+     auto_call_next : number;
+     max_queues : number;
+     booking_advance_days : number;
+     settings_json? : string;
+}
+
+
+
+// api response type 
+
+export interface ApiResponse<T> { 
+   success : boolean;
+   data? : T;
+   error? : string;
+   message? : string;
+}
+
+//form types  
+
+export interface LoginForm {
+    email : string;
+    password : string;
+}
+
+export interface RegisterForm {
+    name : string;
+    email : string;
+    password : string;
+    confirmPassword : string;
+    phone? : string;
+    role : UserRole;
+}
+
+
+export interface CreateQueueForm {
+    name : string;
+    description? : string;
+    category? : string;
+    location? : string;
+    max_capacity : number;
+    avg_service_time : number;
+}
+
+//stats types  
+
+export interface QueueStats {
+    queue : Queue;
+    waiting_time : number;
+    avg_wait_time : number;
+    total_served : number;
+}
+
+
+export interface DashboardStats {
+    total_queues : number;
+    active_queues : number;
+    total_customers_today : number;
+    avg_wait_time_today : number;
+    total_served_today : number;
+}
+
+
+//location types 
+
+export interface Location {
+    longitude : number;
+    latitude : number;
+}
+
+export interface QueueWithDistance extends QueueWithBusiness {
+    distance : number;
+}
+
+//pagination types 
+
+export interface PaginationParams {
+    page : number;
+    limit : number;
+}
+
+export interface PaginatedResponse<T> {
+    data : T[];
+    total : number;
+    page : number;
+    limit : number;
+    hasMore : boolean;
+}
 
 
 
