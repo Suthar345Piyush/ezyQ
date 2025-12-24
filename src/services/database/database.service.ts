@@ -1,7 +1,7 @@
 // whole sqlite db logic here 
 
 import * as SQLite from "expo-sqlite";
-import { version } from "react";
+
 
 //db configuration 
 
