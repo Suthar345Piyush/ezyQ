@@ -22,6 +22,7 @@ export class UserRepository {
     static create(user : Omit<User, 'created_at' | 'updated_at'>) : User {
 
        const now = Date.now();
+       
        const userData = {
          ...user,
          created_at : now,
