@@ -124,7 +124,7 @@ export class UserRepository {
 
       static async emailExists(email : string) : Promise<boolean> {
           const result = await databaseService.getFirstAsync<{count : number}>(
-            'SELECT COUNT (*) as count FROM users WHERE email = ?',
+            'SELECT COUNT(*) as count FROM users WHERE email = ?',
             [email]
           );
 
@@ -143,8 +143,140 @@ export class UserRepository {
 
       //counting users by role  
 
+      static async countByRole(role : string) : Promise<number> {
+          const result = await databaseService.getFirstAsync<{count : number}>(
+            'SELECT COUNT(*) as count FROM users WHERE role = ?',
+            [role]
+          );
+          return result?.count || 0;
+      }
 
+
+      //getting user statistics 
+
+      static async getUserStats(userId : string) {
+          
+          // total queue joined 
+
+          const totalQueues = await databaseService.getFirstAsync<{count : number}>(
+            'SELECT COUNT(DISTINCT queue_id) as count FROM queue_history WHERE user_id = ?',
+            [userId]
+          );
+
+          // getting avg wait time 
+
+          const avgWaitTime = await databaseService.getFirstAsync<{avg : number | null}>(
+
+            'SELECT AVG(wait_time) as avg FROM queue_history WHERE user_id = ?',
+            [userId]
+          );
+
+
+          //getting active queue count 
+
+          const activeQueues = await databaseService.getFirstAsync<{count : number}>(
+
+            `SELECT COUNT(*) as COUNT FROM queue_entries
+             WHERE user_id = ? AND status IN('waiting' , 'called')`,
+
+             [userId]
+          );
+
+
+          return {
+            total_queue_joined : totalQueues?.count || 0,
+            avg_wait_time : Math.round(avgWaitTime?.avg || 0),
+            active_queues : activeQueues?.count || 0,
+          };
+      }
+
+
+      //creating users in bulk 
+
+      static async bulkCreate(users : CreateUserDTO[]) : Promise<User[]> {
+          const createdUsers : User[] = [];
+
+
+          for(const userData of users) {
+             const user = await this.create(userData);
+             createdUsers.push(user);
+          }
+          return createdUsers;
+      }
+
+      //updating user last active timestamp
       
+      static async updateLastActive(id : string) : Promise<void> {
+          await databaseService.runAsync(
+            'UPDATE users SET updated_at = ? WHERE id = ?',
+            [Date.now() , id]
+          );
+      }
 
 
-}
+      /// todo - deactivating the user id 
+
+
+      //check if phone exists 
+
+      static async phoneExists(phone : string) : Promise<boolean> {
+          const result = await databaseService.getFirstAsync<{count : number}>(
+
+            'SELECT COUNT(*) as count FROM users WHERE phone = ? AND phone IS NOT NULL',
+            [phone]
+          );
+          return (result?.count || 0) > 0;
+      }
+
+
+      //finding user by partial name match  
+
+      static async findByName(name : string) : Promise<User[]> {
+         const searchPattern = `%${name}%`;
+         return await databaseService.getAllAsync<User>(
+             'SELECT * FROM users WHERE name LIKE ? ORDER BY name LIMIT 20',
+             [searchPattern]
+         );
+      }
+
+
+      //getting business users with their queue count 
+
+      static async getBusinessWithQueueCount() : Promise<Array<User & {queue_count : number}>> {
+          return await databaseService.getAllAsync<User & {queue_count : number}>(
+            `SELECT u.*, COUNT(q.id) as queue_count
+             FROM users u
+             LEFT JOIN queues q ON u.id = q.business_id
+             WHERE u.role = 'business'
+             GROUP BY u.id
+             ORDER BY queue_count DESC, u.name`,
+
+             []
+          );
+      }
+
+
+      //validating user credentials , just for try 
+
+      // todo - do proper password hashing fot authentication
+
+      static async validateCredentials(email : string , password : string) : Promise<User | null>{
+
+     //for testing  
+
+     const user = await this.getByEmail(email);
+
+
+     if(user) {
+       return user;
+     }
+
+     return null;
+
+      }
+};
+
+
+export default UserRepository;
+
+
