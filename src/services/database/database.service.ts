@@ -268,29 +268,36 @@ export class DatabaseService {
           console.log("All data cleared");
       }
 
-      
+
+      //getting db information 
+
+      public async getDatabaseInfo() {
+          const tables = await this.getAllAsync<{name : string}>(
+             "SELECT name FROM sqlite_master WHERE type='table'  ORDER BY name"
+          );
+
+          return {
+             name : DB_NAME,
+             version : DB_VERSION,
+             tables : tables.map(t => t.name),
+          };
+      }
 
 
+      public getDatabase() : SQLite.SQLiteDatabase {
+          return this.db;
+      }
+    };
 
 
+ // exporting db instance 
+ 
+    export const databaseService = DatabaseService.getInstance();
 
+    
+    export default DatabaseService;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
-
+   
 
  
 
