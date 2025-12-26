@@ -133,6 +133,115 @@ export class QueueRepository {
     }
 
 
+    //updating  the queue  
+
+    static async update(id : string , updates : Partial<Queue>) : Promise<Queue | null> {
+       const allowedFields = [
+         'name' , 'description' , 'category' , 'location' , 'latitude' ,
+         'max_capacity' , 'current_capacity' , 'avg_service_time' , 'status' , 'current_number'
+       ];
+
+       const fields = Object.keys(updates).filter(key => allowedFields.includes(key));
+
+
+       if(fields.length === 0) return this.getById(id);
+
+
+       const setClause = fields.map(field => `${field} = ?`).join(', ');
+
+       const values = fields.map(val => updates[val as keyof Queue]);
+
+
+       await  databaseService.runAsync(
+         `UPDATE queues SET ${setClause}  , updated_at = ? WHERE id = ?`,
+         [...values , Date.now() , id]
+       );
+
+       return this.getById(id);
+    }
+
+
+    // incrementing current number after updating the queue  
+
+    static async incrementCurrNumber(id : string) : Promise<number> {
+
+      await databaseService.runAsync(
+         `UPDATE queues SET current_number = current_number + 1 , updated_at = ? WHERE id = ?`,
+         
+         [Date.now() , id]
+
+      );
+
+      const queue = await this.getById(id);
+
+      return queue?.current_number || 0;
+    }
+
+
+    // updating capacity  
+
+    static async updateCapacity(id : string , change : number) : Promise<Queue | null> {
+        
+       await databaseService.runAsync(
+        'UPDATE queues SET current_capacity = current_capacity + ? , updated_at = ?  WHERE id = ?',
+
+        [change , Date.now() , id]
+       );
+
+       return this.getById(id);
+    }
+
+
+    //updating the status  
+
+   static async updateStatus(id : string , status : Queue['status']) : Promise<Queue | null> {
+
+    await databaseService.runAsync(
+       'UPDATE queues SET status = ? , updated_at = ?  WHERE id = ?',
+
+       [status , Date.now() , id]
+    );
+
+
+    return this.getById(id);
+   }
+
+
+   //deleting the queue (boolean)
+   
+   static async delete(id : string) : Promise<boolean> {
+    const  result = await databaseService.runAsync(
+       'DELETE FROM queues WHERE id = ?',
+
+       [id]
+     );
+     return result.changes > 0;
+   }
+
+
+   //get queue stats 
+
+   static async getStats(id : string) : Promise<QueueStats | null> {
+
+     const queue = await this.getById(id);
+
+     if(!queue) return null;
+
+     const waitingCount = 
+
+     const avgWaitTime = 
+
+
+
+
+   }
+
+
+
+
+
+
+
 
 
 }
