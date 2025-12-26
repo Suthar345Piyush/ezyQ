@@ -1,5 +1,6 @@
 // queue entry repo code logic 
 
+
 import { databaseService } from "../database.service";
 import { Queue , QueueWithBusiness , CreateQueueDTO , QueueStats } from "@/src/types";
 
@@ -153,7 +154,9 @@ export class QueueRepository {
 
 
        await  databaseService.runAsync(
+
          `UPDATE queues SET ${setClause}  , updated_at = ? WHERE id = ?`,
+
          [...values , Date.now() , id]
        );
 
@@ -166,6 +169,7 @@ export class QueueRepository {
     static async incrementCurrNumber(id : string) : Promise<number> {
 
       await databaseService.runAsync(
+
          `UPDATE queues SET current_number = current_number + 1 , updated_at = ? WHERE id = ?`,
          
          [Date.now() , id]
@@ -183,6 +187,7 @@ export class QueueRepository {
     static async updateCapacity(id : string , change : number) : Promise<Queue | null> {
         
        await databaseService.runAsync(
+
         'UPDATE queues SET current_capacity = current_capacity + ? , updated_at = ?  WHERE id = ?',
 
         [change , Date.now() , id]
@@ -197,6 +202,7 @@ export class QueueRepository {
    static async updateStatus(id : string , status : Queue['status']) : Promise<Queue | null> {
 
     await databaseService.runAsync(
+
        'UPDATE queues SET status = ? , updated_at = ?  WHERE id = ?',
 
        [status , Date.now() , id]
@@ -211,6 +217,7 @@ export class QueueRepository {
    
    static async delete(id : string) : Promise<boolean> {
     const  result = await databaseService.runAsync(
+
        'DELETE FROM queues WHERE id = ?',
 
        [id]
@@ -227,21 +234,288 @@ export class QueueRepository {
 
      if(!queue) return null;
 
-     const waitingCount = 
+     const waitingCount = await databaseService.getFirstAsync<{count : number}> (
 
-     const avgWaitTime = 
-
-
-
-
-   }
+       'SELECT COUNT(*) as count FROM queue_entries WHERE queue_id = ? AND status = "waiting"',
+       [id]
+     );
 
 
 
+     const avgWaitTime = await databaseService.getFirstAsync<{avg : number | null}>(
+
+       `SELECT AVG(wait_time) as avg FROM queue_history
+        WHERE queue_id = ? AND completed_at > ?`,
+
+        [id , Date.now() - 7 * 24 * 60 * 60 * 1000]     // it is for last 7 days 
+     );
+
+     const totalServed = await  databaseService.getFirstAsync<{count : number}>(
+
+          'SELECT COUNT(*) as count FROM queue_history WHERE queue_id = ?',
+
+          [id]
+     );
 
 
 
+    return {
+      queue,
+      waiting_time : waitingCount?.count || 0,
+      avg_wait_time : Math.round(avgWaitTime?.avg || queue.avg_service_time),
+      total_served : totalServed?.count || 0,
+    }
+   };
 
 
 
-}
+  //  getting queue  categories 
+
+  static async  getCategories() : Promise<string[]> {
+     const results = await databaseService.getAllAsync<{category : string}>(
+
+        'SELECT DISTINCT category FROM queues WHERE category IS NOT NULL ORDER BY category',
+
+     );
+
+     return results.map(r => r.category);
+
+  }
+
+
+
+  //getting all queues 
+
+  static async getAll(limit : number = 100) : Promise<QueueWithBusiness[]>{
+      return await databaseService.getAllAsync<QueueWithBusiness>(
+
+         `SELECT q.*, u.name as business_name , u.email as business_email
+          FROM queues q
+           JOIN users u ON q.business_id = u.id
+           ORDER BY q.created_at DESC
+           LIMIT ?`,
+
+           [limit]
+      );
+  }
+
+
+  //get queues by status  
+
+  static async getByStatus(status : Queue['status']) : Promise<QueueWithBusiness[]>{
+    return await databaseService.getAllAsync<QueueWithBusiness>(
+      
+         `SELECT q.*, u.name as business_name , u.email as business_email
+          FROM queues q
+          JOIN users u ON q.business_id = u.id
+          WHERE q.status = ?
+          ORDER BY q.created_at DESC`,
+
+          [status]
+    );
+  }
+
+
+  //get queues by categories 
+
+  static async getByCategory(category : string , limit : number = 50) : Promise<QueueWithBusiness[]>{
+      
+       return await databaseService.getAllAsync<QueueWithBusiness>(
+           
+           `SELECT q.* , u.name as business_name , u.email as business_email
+            FROM queues q
+            JOIN users u ON q.business_id = u.id
+            WHERE q.category = ? AND q.status = 'active'
+            ORDER BY q.current_capacity ASC
+            LIMIT ?`,
+
+            [category , limit]
+       );
+  }
+
+
+
+     // getting nearby queues 
+
+     static async getNearby(
+      latitide : number,
+      longitude : number,
+      radiusKm : number = 5
+     ) : Promise<Array<QueueWithBusiness & {distance : number}>>{
+        
+         // haversine formula sqlite 
+
+         return await databaseService.getAllAsync<QueueWithBusiness & {distance : number}>(
+
+           `SELECT q.*, u.name as business_name , u.email as business_email,
+           (6371 * acos(
+            cos(radians(?)) * cos(radians(q.latitude)) * 
+            cos(radians(q.longitude) - radians(?)) + 
+            sin(radians(?)) * sin(radians(q.latitude))
+           )) AS distance 
+           FROM queues q
+           JOIN users u ON q.business_id = u.id
+           WHERE q.latitude IS NOT NULL
+             AND q.longitude IS NOT NULL
+             AND q.status = 'active'
+             HAVING distance < ?
+             ORDER BY DISTANCE ASC
+           `,
+
+           [latitide , longitude , radiusKm , latitide]
+         );
+     }
+
+
+     // getting popular queues (which have most entries in last 7 days)
+
+     static async getPopular(limit : number = 10) : Promise<Array<QueueWithBusiness & {entry_count : number}>> {
+         
+       return await databaseService.getAllAsync<QueueWithBusiness & {entry_count : number}>(
+
+           `SELECT q.*, u.name as business_name , u.email as business_email
+            COUNT(qe.id) as entry_count
+             FROM queues q
+             JOIN users u ON q.business_id = u.id
+             LEFT JOIN queue_entries qe ON q.id = qe.queue_id
+               AND qe.joined_at > ?
+                WHERE q.status = 'active'
+                GROUP BY q.id
+                ORDER BY entry_count DESC
+                LIMIT ?`,
+
+                [Date.now() - 7 * 24 * 60 * 60 * 1000 , limit]
+            
+       )
+     }
+
+    //checking if queue is full 
+
+    static async isFull(id : string) : Promise<boolean> {
+
+      const queue = await this.getById(id);
+
+      if(!queue) return true;
+
+
+       // if current capacity greater then max then it is true 
+
+      return queue.current_capacity >= queue.max_capacity;
+    }
+
+
+    //getting queue utilization %age 
+
+    static async getUtilization(id : string) : Promise<number> {
+
+       const queue = await this.getById(id);
+
+       if(!queue) return 0;
+
+       return Math.round((queue.current_capacity / queue.max_capacity) * 100);
+
+    }
+
+
+    // get business queue stats 
+
+    static async getBusinessStats(businessId : string) {
+       const totalQueues = await databaseService.getFirstAsync<{count : number}>(
+
+            'SELECT COUNT(*) as count FROM queues WHERE business_id = ?',
+
+            [businessId]
+       );
+
+
+       // active queues  
+
+       const activeQueues = await databaseService.getFirstAsync<{count : number}>(
+
+           'SELECT COUNT(*) as count FROM queues WHERE business_id = ? AND status = "active"',
+
+           [businessId]
+       );
+
+       //total customers(users)
+     
+       const totalCustomers = await databaseService.getFirstAsync<{count : number}>(
+
+         `SELECT COUNT(DISTINCT qe.user_id) as count
+          FROM queue_entries qe
+          JOIN queues q ON qe.queue_id = q.id
+           WHERE q.business_id = ?`,
+
+           [businessId]
+       );
+
+
+       // total served people 
+
+       const totalServed = await databaseService.getFirstAsync<{count : number}>(
+
+        `SELECT COUNT(*) as count
+         FROM queue_history qh
+         JOIN queues q ON qh.queue_id = q.id
+          WHERE q.business_id = ?`,
+
+          [businessId]
+       );
+
+
+     
+       return {
+         total_queues : totalQueues?.count || 0,
+         active_queues : activeQueues?.count || 0,
+         total_customers : totalCustomers?.count || 0,
+         total_served : totalServed?.count || 0,
+       }
+    };
+
+  
+
+    //updating queue status in bulk amount 
+
+    static async bulkUpdateStatus(queueIds : string[] , status : Queue['status']) : Promise<number> {
+      
+         const placeholders = queueIds.map(() => '?').join(', ');
+
+         const result = await databaseService.runAsync(
+
+           `UPDATE queues SET status = ? , updated_at = ? WHERE id IN(${placeholders})`,
+
+           [status , Date.now() , ...queueIds]
+         );
+
+         return result.changes;
+    }
+
+
+    //after work done reset all queues , clearing all entries 
+
+    static async reset(id : string) : Promise<Queue | null> {
+        await databaseService.runAsync(
+
+          'UPDATE queues SET current_capacity = 0 , current_number = 0 , updated_at = ? WHERE id = ?',
+
+          [Date.now() , id]
+        );
+
+
+        // deleting all active entries for this queue  
+
+         await databaseService.runAsync(
+
+          'DELETE FROM queue_entries WHERE queue_id = ? AND status IN("waiting" , "called")',
+
+          [id]
+         );
+    
+         return this.getById(id);
+    };
+};
+
+
+export default QueueRepository;
+
+
