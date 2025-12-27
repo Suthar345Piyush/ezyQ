@@ -76,7 +76,7 @@ export interface QueueEntry {
    id : string;
    queue_id : string;
    user_id : string;
-   ticket_number : string;
+   ticket_number : number;
    status : QueueEntryStatus;
    priority : number;
    joined_at : number;
