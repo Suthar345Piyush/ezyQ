@@ -124,13 +124,17 @@ export class QueueRepository {
       //checking if , category is mentioned then adding it's query to sql and pushing into parameters 
 
       if(category){
-        sql += 'AND q.category = ?';
+        sql += `AND q.category = ?`;
         params.push(category);
       }
 
-      sql += ' ORDER BY q.status = "active" DESC , q.current_capacity ASC LIMIT 50',
+      sql += `
+        ORDER BY q.priority DESC , q.current_capacity ASC
+        LIMIT 50
+      `;
 
-      return await databaseService.getAllAsync<QueueWithBusiness>(sql , params);
+       return await databaseService.getAllAsync<QueueWithBusiness>(sql , params);
+
     }
 
 
