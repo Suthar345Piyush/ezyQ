@@ -2,7 +2,7 @@
 
 
 import { databaseService } from "../database.service";
-import { QueueEntry , CreateQueueEntryDTO , QueueEntryWithDetails} from "@/src/types";
+import { QueueEntry , CreateQueueEntryDTO , QueueEntryWithDetails, Queue} from "@/src/types";
 
 
 export class QueueEntryRepository {
@@ -224,16 +224,166 @@ export class QueueEntryRepository {
           return this.getById(id);
        }
 
-       
+
+       //calling next person 
+
+       static async callNext(queueId : string) : Promise<QueueEntry | null> {
+
+         const next = await this.getNextInQueue(queueId);
+
+         if(!next) return null;
+
+          // updating the status , to called the next person in queue  
+
+         return this.updateStatus(next.id , 'called');
+
+       }
+
+       //updating entry
+
+      static async update(id : string , updates : Partial<QueueEntry>) : Promise<QueueEntry | null> {
+
+            const allowedFields = ['status' , 'priority' , 'estimated_wait_time' , 'notes'];
+
+            const fields = Object.keys(updates).filter(key => allowedFields.includes(key));
+
+
+            if(fields.length === 0) return this.getById(id);
+
+            const setClause = fields.map(field => `${field} = ?`).join(', ');
+
+            const values = fields.map(val => updates[val as keyof QueueEntry]);
+
+            await databaseService.runAsync(
+               `UPDATE queue_entries SET ${setClause} WHERE id = ?`,
+               [...values , id]
+            );
+
+            return this.getById(id);
+      };
+
+
+      //cancelling the entry  
+
+      static async cancel(id : string) : Promise<QueueEntry | null> {
+
+           return this.updateStatus(id , 'cancelled');
+
+      }
+
+
+      // marking as served and moving to history  
+
+      static async markAsServed(id : string) : Promise<boolean> {
+
+          const entry = await this.getById(id);
+
+          if(!entry) return false;
+
+          await this.updateStatus(id , 'served');
+
+
+          //calculating the wait time and service time  
+
+          const waitTime = entry.called_at ? 
+              entry.called_at - entry.joined_at : 
+              Date.now() - entry.joined_at;
+
+
+          const serviceTime = entry.called_at ?
+              Date.now() - entry.called_at
+              : 0;
+              
+              
+              //adding it to the history 
+
+              await databaseService.runAsync(
+
+                `INSERT INTO queue_history (
+                  queue_id , user_id , ticket_number , wait_time , service_time , status , joined_at , completed_at
+                ) VALUES (? , ? , ? , ? , ? , ? , ? , ?)`,
+
+                [
+
+                  entry.user_id,
+                  entry.queue_id,
+                  entry.ticket_number,
+                  Math.floor(waitTime / 1000 / 60),    // in minutes 
+                  Math.floor(serviceTime / 1000 / 60),
+                  'served',
+                  entry.joined_at,
+                  Date.now(),
+                ]
+              );
+
+              return true;
+
+      }
+
+
+      //deleting the entry 
+
+      static async delete(id : string) : Promise<boolean> {
+
+         const result = await databaseService.runAsync(
+
+            `DELETE FROM queue_entries WHERE id = ?`,
+
+            [id]
+         );
+
+         return result.changes > 0;
+      }
+
+
+      //get waiting count 
+
+      static async getWaitingCount(queueId : string) : Promise<number> {
+
+         const result = await databaseService.getFirstAsync<{count : number}>(
+             
+             `SELECT COUNT(*) as count FROM queue_entries WHERE queue_id = ? AND status = "waiting"`,
+
+             [queueId]
+         )
+
+         return result?.count || 0;
+
+      }
+
+
+      //cheking if user is in queue  
+
+      static async isUserInQueue(queueId : string , userId : string) : Promise<boolean> {
+
+         const result = await databaseService.getFirstAsync<{count : number}>(
+
+            `SELECT COUNT(*) as count FROM queue_entries WHERE queue_id = ? AND user_id = ? AND status IN('waiting' , 'called')`,
+
+            [queueId , userId]
+
+         )
+
+         return (result?.count || 0) > 0;
+
+      }
+
+      // get user entry in queue , those are in still waiting or being called
+
+      static async getUserEntry(userId : string , queueId : string) : Promise<QueueEntry | null> {
+
+          return  await databaseService.getFirstAsync<QueueEntry>(
+
+            `SELECT * FROM queue_entries WHERE queue_id = ? AND user_id = ? AND status IN('waiting' , 'called')`,
+
+            [queueId , userId]
+
+         );
+      };
+   }
 
 
 
+ export default QueueEntryRepository;
 
 
-
-
-
-
-
-
-}
