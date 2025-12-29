@@ -2,7 +2,7 @@
 
 import {create} from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import { User } from '../types';
+import { User, UserRole } from '../types';
 
 
 interface AuthState {
@@ -53,7 +53,7 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
             set({
               user,
               isAuthenticated : true,
-              isLoading : false;
+              isLoading : false,
             });
          }
          
@@ -66,10 +66,101 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
 
      // logout code 
 
+     logout : async () => {
+         try {
 
-     
+           await SecureStore.deleteItemAsync(TOKEN_KEY);
+           await SecureStore.deleteItemAsync(USER_KEY);
 
-}))
+
+           set({
+              user : null,
+              isAuthenticated : false,
+              isLoading : false
+           });
+
+         } catch(error) {
+           console.error('Logout error:' , error);
+           throw error;
+         }
+     },
+
+
+     //updating the user data 
+     updateUser : (updates) => {
+
+        const currentUser = get().user;
+
+        if(!currentUser) return;
+
+        const updatedUser = {...currentUser , ...updates};
+
+        //saving to secure store 
+
+        SecureStore.setItemAsync(USER_KEY , JSON.stringify(updatedUser)).catch(console.error);
+
+
+        //update state 
+
+        set({user : updatedUser});
+
+     },
+
+
+     //initializing auth (restoring session on app start)
+
+     initialize : async () => {
+
+        try {
+           set({isLoading : true});
+
+           const token = await SecureStore.getItemAsync(TOKEN_KEY);
+
+           const userStr = await SecureStore.getItemAsync(USER_KEY);
+
+           if(token && userStr) {
+             
+             const user = JSON.parse(userStr) as User;
+
+             set({
+               user,
+               isAuthenticated : true,
+               isLoading : false,
+             });
+           } else {
+              set({
+                 user : null,
+                 isAuthenticated : false,
+                 isLoading : false,
+              });
+           }
+        }  catch(error) {
+
+           console.error('Auth initialization error:' , error);
+           
+           set({
+             user : null,
+             isAuthenticated : false,
+             isLoading : false,
+           });
+        }
+     }
+}));
+
+
+//function to get auth token 
+``
+export const getAuthToken = async () : Promise<string | null>  => {
+   try {
+     return await SecureStore.getItemAsync(TOKEN_KEY);
+   } catch(error) {
+     console.error('Get token error:' , error);
+
+     return null;
+   }
+}
+
+
 
 
 
