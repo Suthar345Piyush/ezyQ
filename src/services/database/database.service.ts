@@ -9,7 +9,7 @@ const DB_NAME = 'ezyQ.db';
 const DB_VERSION = 1;
 
 
-export class DatabaseService {
+ class DatabaseService {
     private static instance : DatabaseService;
     private db : SQLite.SQLiteDatabase;
     private isInitialized : boolean = false;
@@ -42,7 +42,7 @@ export class DatabaseService {
        if(this.isInitialized) return;
 
        try {
-          await this.createTables();
+          this.createTables();
           this.isInitialized = true;
           console.log("DB initialized");
        } catch(error) {
@@ -53,21 +53,14 @@ export class DatabaseService {
 
 
 
-
-
-
-
-
-
-
     //initializing all tables,always wrapped them into try/finally statement
     
-    private async createTables() : Promise<void> {
+    private createTables() : void {
        
 
           // users table  
 
-          await this.db.execAsync(`
+           this.db.runSync(`
              CREATE TABLE IF NOT EXISTS users (
                id TEXT PRIMARY KEY,
                email TEXT UNIQUE NOT NULL,
@@ -83,7 +76,7 @@ export class DatabaseService {
 
           // queue table 
 
-         await  this.db.execAsync(`
+           this.db.runSync(`
              CREATE TABLE IF NOT EXISTS queues (
                id TEXT PRIMARY KEY,
                business_id TEXT NOT NULL,
@@ -107,7 +100,7 @@ export class DatabaseService {
 
           //queue entry tables 
         
-          await this.db.execAsync(`
+           this.db.runSync(`
              CREATE TABLE IF NOT EXISTS queue_entries (
                id TEXT PRIMARY KEY,
                queue_id TEXT NOT NULL,
@@ -129,7 +122,7 @@ export class DatabaseService {
 
           //queue history table for analytics 
 
-          await this.db.execAsync(`
+           this.db.runSync(`
             CREATE TABLE IF NOT EXISTS queue_history (
                id INTGER PRIMARY KEY AUTOINCREMENT,
                queue_id TEXT NOT NULL,
@@ -150,7 +143,7 @@ export class DatabaseService {
 
           //notification tables 
 
-          this.db.execSync(`
+          this.db.runSync(`
             CREATE TABLE IF NOT EXISTS notifications (
                id TEXT PRIMARY KEY,
                user_id TEXT NOT NULL,
@@ -167,10 +160,10 @@ export class DatabaseService {
 
         // creating indexes for queries 
 
-        await this.createIndexes();
+         this.createIndexes();
        } 
 
-       private async createIndexes() : Promise<void> {
+       private  createIndexes() : void {
 
          const indexes = [
            'CREATE INDEX IF NOT EXISTS idx_queues_business_id ON queues(business_id)',
@@ -183,9 +176,9 @@ export class DatabaseService {
            
          ];
 
-         for(const indexSQL of indexes) {
-             await this.db.execAsync(indexSQL);
-         }
+        indexes.forEach(indexSQL => {
+          this.db.runAsync(indexSQL);
+        });
       }
 
 
@@ -262,7 +255,7 @@ export class DatabaseService {
 
 
           for(const table of tables) {
-             await this.db.execAsync(`DELETE FROM ${table}`);
+             await this.db.runAsync(`DELETE FROM ${table}`);
           }
 
           console.log("All data cleared");

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import {View , Text , ActivityIndicator} from 'react-native';
-import { useAuthStore } from "@/src/stores/authStore";
+import { useAuthStore } from "../src/stores/authStore";
 
 export  default function Index() {
 
@@ -17,11 +17,11 @@ export  default function Index() {
 
                   if(user.role === 'business') {
 
-                     router.replace('/(business)/(tabs)/dashboard');
+                     router.replace('/(business)/(tabs)/dashboard' as Href);
 
                   } else {
 
-                     router.replace('/(user)/(tabs)');
+                     router.replace('/(user)/(tabs)' as Href);
 
                   }
               } 
