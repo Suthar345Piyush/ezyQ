@@ -1,8 +1,9 @@
 // (auth)/welcome file  
 
-import {  ScrollView, Text, View } from 'react-native';
+import {  ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function WelcomeScreen() {
     return (
@@ -43,13 +44,71 @@ export default function WelcomeScreen() {
 
         <View className='px-6 py-8'>
            <Feature 
-           
-           
-           />
+              icon='time-outline' iconColor='#3b82f6' bgColor='bg-blue-50' title='Real-time Updates' description='Get instant notifications about your queue position'/>
 
+              <Feature 
+                icon='notifications-outline'
+                iconColor='#8b5cf6'
+                bgColor='bg-purple-50'
+                title='Smart Notifications'
+                description="We'll notifiy you when it's almost your turn"
+              />
 
+              <Feature icon="location-outline" iconColor='#10b981' bgColor='bg-emerald-50' title='Find Nearby Queues' description='Discover and join queues near your location'
+              />
 
+              <Feature icon='speedometer-outline' iconColor='#f59e0b' bgColor='bg-amber-50' title='Time Estimates' description="Know exactly how long you'll wait"
+              />
         </View>
+
+         <View className='flex-1' />
+
+         <View className='px-6 pb-6 space-y-3'>
+
+           <TouchableOpacity onPress={() => router.push('/(auth)/register')}
+             className='bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg active:scale-95 transition-transform'
+            >
+
+               <View className='flex-row items-center justify-center py-4 px-6'>
+                  <Text className='text-white text-lg font-bold mr-2'>
+                      Get Started
+                  </Text>
+                  <Ionicons name='arrow-forward' size={20} color="#fff"/>
+               </View>
+           </TouchableOpacity>
+
+
+           <TouchableOpacity onPress={() => router.push('/(auth)/login')}
+             className='bg-white border-2 border-gray-200 rounded-2xl active:scale-95 transition-transform'>
+
+              <View className='py-4 px-6'>
+                <Text className='text-gray-700 text-base text-center font-semibold'>Already have an account?{' '}</Text>
+                </View> 
+           </TouchableOpacity>
+
+
+           <TouchableOpacity onPress={async () => {
+              const {seedDatabase} = await import('../../utils/seedDatabase');
+
+              const result = await seedDatabase();
+
+              alert(result.success ? 'Demo data loaded!' : 'Failed to load data');
+              
+           }}  className='bg-emerald-50 border-2 border-emerald-200 rounded-2xl active:scale-95 transition-transform mt-2'>
+
+            <View className='py-3 px-6'>
+               <Text className='text-emerald-700 text-sm text-center font-semibold'>
+                 Load demo data 
+
+               </Text>
+
+            </View>
+
+           </TouchableOpacity>
+
+         </View>
+
+
            
          </ScrollView>
        </SafeAreaView>

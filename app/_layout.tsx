@@ -3,8 +3,8 @@ import { useEffect , useState } from 'react';
 import { Stack } from 'expo-router';
 import {View , Text , ActivityIndicator} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { databaseService } from '@/src/services/database/database.service';
-import { useAuthStore } from '@/src/stores/authStore';
+import { databaseService } from '../src/services/database/database.service';
+import { useAuthStore } from '../src/stores/authStore';
 
 export default function RootLayout() {
 
