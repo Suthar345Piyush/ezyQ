@@ -55,13 +55,13 @@ const DB_VERSION = 1;
 
     //initializing all tables,always wrapped them into try/finally statement
     
-    private async  createTables() : Promise<void> {
-       
+    private createTables() : void {
 
-          // users table  
-
-          await this.db.prepareAsync(
-              `PRAGMA journal_mode = WAL;
+      try {
+           this.db.execSync(
+              ` PRAGMA journal_mode = WAL;
+                PRAGMA foreign_keys = ON;
+            
                CREATE TABLE IF NOT EXISTS users (
                id TEXT PRIMARY KEY,
                email TEXT UNIQUE NOT NULL,
@@ -71,124 +71,97 @@ const DB_VERSION = 1;
                avatar_url TEXT,
                created_at INTEGER NOT NULL,
                updated_at INTEGER NOT NULL,
-               )`
-          );
+
+               );
 
 
-          // queue table 
+               CREATE TABLE IF NOT EXISTS queues (
+                  id TEXT PRIMARY KEY,
+                  business_id TEXT NOT NULL,
+                  name TEXT NOT NULL,
+                  description TEXT,
+                  category TEXT,
+                  location TEXT,
+                  latitude REAL,
+                  longitude REAL,
+                  max_capacity INTEGER  DEFAULT 50,
+                  current_capacity INTEGER DEFAULT 0,
+                  avg_service_time INTEGER DEFAULT 10,
+                  status TEXT CHECK(status IN('active' , 'paused' , 'closed')) DEFAULT 'active',
+                  current_number INTEGER DEFAULT 0,
+                  is_favorite INTEGER DEFAULT 0,
+                  created_at INTEGER NOT NULL,
+                  updated_at INTEGER NOT NULL,
+                  FOREIGN KEY (business_id) REFERENCES users(id) ON DELETE CASCADE
+                );
 
-           await this.db.prepareAsync(`
-             PRAGMA journal_mode =  WAL;
-             CREATE TABLE IF NOT EXISTS queues (
-               id TEXT PRIMARY KEY,
-               business_id TEXT NOT NULL,
-               name TEXT NOT NULL,
-               description TEXT,
-               category TEXT,
-               location TEXT,
-               latitude REAL,
-               longitude REAL,
-               max_capacity INTEGER  DEFAULT 50,
-               current_capacity INTEGER DEFAULT 0,
-               avg_service_time INTEGER DEFAULT 10,
-               status TEXT CHECK(status IN('active' , 'paused' , 'closed')) DEFAULT 'active',
-               current_number INTEGER DEFAULT 0,
-               is_favorite INTEGER DEFAULT 0,
-               created_at INTEGER NOT NULL,
-               updated_at INTEGER NOT NULL,
-               FOREIGN KEY (business_id) REFERENCES users(id) ON DELETE CASCADE
-             )  
-          `);
-
-          //queue entry tables 
-        
-           await this.db.prepareAsync(`
-             PRAGMA journal_mode = WAL;
-             CREATE TABLE IF NOT EXISTS queue_entries (
-               id TEXT PRIMARY KEY,
-               queue_id TEXT NOT NULL,
-               user_id TEXT NOT NULL,
-               ticket_number INTEGER NOT NULL,
-               status TEXT CHECK(status IN('waiting' , 'called' , 'served' , 'cancelled' , 'no_show')) DEFAULT 'waiting',
-               priority INTEGER DEFAULT 0,
-               joined_at INTEGER NOT NULL,
-               called_at INTEGER,
-               served_at INTEGER,
-               cancelled_at INTEGER,
-               estimated_wait_time INTEGER,
-               notes TEXT,
-               FOREIGN KEY (queue_id) REFERENCES queues(id) ON DELETE CASCADE,
-               FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-               )
-          `);
+       
+                  CREATE TABLE IF NOT EXISTS queue_entries (
+                  id TEXT PRIMARY KEY,
+                  queue_id TEXT NOT NULL,
+                  user_id TEXT NOT NULL,
+                  ticket_number INTEGER NOT NULL,
+                  status TEXT CHECK(status IN('waiting' , 'called' , 'served' , 'cancelled' , 'no_show')) DEFAULT 'waiting',
+                  priority INTEGER DEFAULT 0,
+                  joined_at INTEGER NOT NULL,
+                  called_at INTEGER,
+                  served_at INTEGER,
+                  cancelled_at INTEGER,
+                  estimated_wait_time INTEGER,
+                  notes TEXT,
+                  FOREIGN KEY (queue_id) REFERENCES queues(id) ON DELETE CASCADE,
+                  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                  );
 
 
-          //queue history table for analytics 
-
-           await this.db.prepareAsync(`
-            PRAGMA journal_mode = WAL;
-            CREATE TABLE IF NOT EXISTS queue_history (
-               id INTGER PRIMARY KEY AUTOINCREMENT,
-               queue_id TEXT NOT NULL,
-               user_id TEXT NOT NULL,
-               ticket_number INTEGER NOT NULL,
-               wait_time INTEGER,
-               service_time INTEGER,
-               status TEXT NOT NULL,
-               joined_at INTEGER NOT NULL,
-               completed_at INTEGER NOT NULL,
-               rating INTEGER CHECK(rating >= 1 AND rating <= 5),
-               feedback TEXT,
-               FOREIGN KEY (queue_id) REFERENCES queues(id),
-               FOREIGN KEY (user_id) REFERENCES users(id),
-               )       
-          `);
+                  CREATE TABLE IF NOT EXISTS queue_history (
+                     id INTGER PRIMARY KEY AUTOINCREMENT,
+                     queue_id TEXT NOT NULL,
+                     user_id TEXT NOT NULL,
+                     ticket_number INTEGER NOT NULL,
+                     wait_time INTEGER,
+                     service_time INTEGER,
+                     status TEXT NOT NULL,
+                     joined_at INTEGER NOT NULL,
+                     completed_at INTEGER NOT NULL,
+                     rating INTEGER CHECK(rating >= 1 AND rating <= 5),
+                     feedback TEXT,
+                     FOREIGN KEY (queue_id) REFERENCES queues(id),
+                     FOREIGN KEY (user_id) REFERENCES users(id),
+                     );
 
 
-          //notification tables 
-
-          await this.db.prepareAsync(`
-            PRAGMA journal_mode = WAL;
-            CREATE TABLE IF NOT EXISTS notifications ( 
-               id TEXT PRIMARY KEY,
-               user_id TEXT NOT NULL,
-               title TEXT NOT NULL,
-               message TEXT NOT NULL,
-               type TEXT NOT NULL,
-               data TEXT,
-               is_read INTEGER DEFAULT 0,
-               created_at INTEGER NOT NULL,
-               FOREIGN KEY (user_id) REFERENCES users(id) on DELETE CASCADE  
-               )          
-          `);
+                     CREATE TABLE IF NOT EXISTS notifications ( 
+                        id TEXT PRIMARY KEY,
+                        user_id TEXT NOT NULL,
+                        title TEXT NOT NULL,
+                        message TEXT NOT NULL,
+                        type TEXT NOT NULL,
+                        data TEXT,
+                        is_read INTEGER DEFAULT 0,
+                        created_at INTEGER NOT NULL,
+                        FOREIGN KEY (user_id) REFERENCES users(id) on DELETE CASCADE  
+                        );
 
 
-        // creating indexes for queries 
+           CREATE INDEX IF NOT EXISTS idx_queues_business_id ON queues(business_id),
+           CREATE INDEX IF NOT EXISTS idx_queues_status ON queues(status),
+           CREATE INDEX IF NOT EXISTS idx_queue_entries_queue_id ON queue_entries(queue_id),
+           CREATE INDEX IF NOT EXISTS idx_queue_entries_user_id ON queue_entries(user_id),
+           CREATE INDEX IF NOT EXISTS idx_queue_entries_status ON queue_entries(status),
+           CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id),
+           `);
+                  
 
-         this.createIndexes();
-       } 
-
-       private createIndexes() : void {
-
-         const indexes = [
-           `CREATE INDEX IF NOT EXISTS idx_queues_business_id ON queues(business_id)`,
-           `CREATE INDEX IF NOT EXISTS idx_queues_status ON queues(status)`,
-           `CREATE INDEX IF NOT EXISTS idx_queue_entries_queue_id ON queue_entries(queue_id)`,
-           `CREATE INDEX IF NOT EXISTS idx_queue_entries_user_id ON queue_entries(user_id)`,
-           `CREATE INDEX IF NOT EXISTS idx_queue_entries_status ON queue_entries(status)`,
-           `CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)`,
-         ];
-
-         indexes.forEach(indexSQL => {
-           this.db.runSync(indexSQL);
-        });
-      }
+         console.log("Tables and indexes created");
+      }  catch( error ) {
+         console.error('Error creating tables:' , error);
+         throw error;
+    };
+ };
 
 
       //generic query methods for tables  
-
-
-
     // run method
 
    public async runAsync(sql : string , params : any[] = []) : Promise<SQLite.SQLiteRunResult> {
@@ -224,6 +197,35 @@ const DB_VERSION = 1;
           }
       }
 
+      // for sync operations  
+
+      public runSync(sql : string , params : any[] = []) : SQLite.SQLiteRunResult {
+           try {
+             return this.db.runSync(sql , params);
+           } catch(err) {
+             console.error('Sync query error:' , err , sql , params);
+             throw err;
+           }
+      } 
+
+      public getFirstSync<T>(sql : string , params : any[] = []) : T | null {
+          try {
+             return this.db.getFirstSync<T>(sql , params);
+          } catch(error){
+             console.error('Sync query error:' , error , sql , params);
+             throw error;
+          }
+      }
+
+      public getAllSync<T>(sql : string , params : any[] = []) : T[] {
+          try {
+             return this.db.getAllSync<T>(sql , params);
+          } catch(error) {
+             console.error('Sync query error:' , error , sql , params);
+             throw error;
+          }
+      }
+
       // db transaction support 
 
       public async withTransactionAsync<T>(callback : () => Promise<T>) : Promise<T>  {
@@ -246,7 +248,7 @@ const DB_VERSION = 1;
 
       //1. clearing all data 
 
-      public async clearAllData() : Promise<void> {
+      public  clearAllData() : void {
 
           const tables = [
              'notifications',
@@ -258,7 +260,7 @@ const DB_VERSION = 1;
 
 
           for(const table of tables) {
-             await this.db.runAsync(`DELETE FROM ${table}`);
+             this.db.runAsync(`DELETE FROM ${table}`);
           }
 
           console.log("All data cleared");
@@ -282,6 +284,29 @@ const DB_VERSION = 1;
 
       public getDatabase() : SQLite.SQLiteDatabase {
           return this.db;
+      }
+
+      //closing the db 
+
+      public closeDatabase() : void {
+          try {
+             this.db.closeSync();
+             this.isInitialized = false;
+             console.log('DB closed');
+          } catch (error) {
+             console.error("error closing DB:" , error);
+          }
+      }
+
+      //deleting db file  
+      public static async deleteDatabase() : Promise<void> {
+          try {
+             await SQLite.deleteDatabaseAsync(DB_NAME);
+             console.log('Database file deleted');
+          } catch(error) {
+             console.error('Error deleting db:' , error);
+             throw error;
+          }
       }
     };
 
