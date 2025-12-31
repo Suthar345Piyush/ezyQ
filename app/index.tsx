@@ -17,11 +17,11 @@ export  default function Index() {
 
                   if(user.role === 'business') {
 
-                     router.replace('/(business)/(tabs)/dashboard' as Href);
+                     router.push('/(business)/(tabs)/dashboard' as Href);
 
                   } else {
 
-                     router.replace('/(user)/(tabs)' as Href);
+                     router.push('/(user)/(tabs)' as Href);
 
                   }
               } 

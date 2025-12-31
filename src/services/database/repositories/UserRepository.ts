@@ -214,7 +214,7 @@ export class UserRepository {
       }
 
 
-      /// todo - deactivating the user id 
+    /// todo - deactivating the user id 
 
 
       //check if phone exists 
