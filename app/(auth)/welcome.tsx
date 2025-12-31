@@ -4,6 +4,7 @@ import {  ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { databaseService } from '../../src/services/database/database.service';
 
 export default function WelcomeScreen() {
     return (
@@ -106,7 +107,25 @@ export default function WelcomeScreen() {
 
            </TouchableOpacity>
 
+           <TouchableOpacity onPress={async () => {
+            try {
+               const info = await databaseService.getDatabaseInfo();
+               alert(`Table:${info.tables.join(', ')}`);
+            } catch(error) {
+               alert(`Error : ${error}`);
+            }
+           }} className='bg-green-500 p-4 rounded-xl mx-6 mb-4'>
+
+             <Text className='text-white font-bold text-center'>
+               Check database table 
+
+             </Text>
+
+           </TouchableOpacity>
+
          </View>
+
+
 
 
            
