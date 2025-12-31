@@ -19,7 +19,7 @@ const DB_VERSION = 1;
     //creating a constructor  
 
     private constructor() {
-       this.db = SQLite.openDatabaseSync(DB_NAME);
+          this.db = SQLite.openDatabaseSync(DB_NAME);
     }
 
 
@@ -55,13 +55,14 @@ const DB_VERSION = 1;
 
     //initializing all tables,always wrapped them into try/finally statement
     
-    private createTables() : void {
+    private async  createTables() : Promise<void> {
        
 
           // users table  
 
-           this.db.runSync(`
-             CREATE TABLE IF NOT EXISTS users (
+          await this.db.prepareAsync(
+              `PRAGMA journal_mode = WAL;
+               CREATE TABLE IF NOT EXISTS users (
                id TEXT PRIMARY KEY,
                email TEXT UNIQUE NOT NULL,
                name TEXT NOT NULL,
@@ -70,13 +71,14 @@ const DB_VERSION = 1;
                avatar_url TEXT,
                created_at INTEGER NOT NULL,
                updated_at INTEGER NOT NULL,
-             );
-          `);
+               )`
+          );
 
 
           // queue table 
 
-           this.db.runSync(`
+           await this.db.prepareAsync(`
+             PRAGMA journal_mode =  WAL;
              CREATE TABLE IF NOT EXISTS queues (
                id TEXT PRIMARY KEY,
                business_id TEXT NOT NULL,
@@ -95,12 +97,13 @@ const DB_VERSION = 1;
                created_at INTEGER NOT NULL,
                updated_at INTEGER NOT NULL,
                FOREIGN KEY (business_id) REFERENCES users(id) ON DELETE CASCADE
-             );
+             )  
           `);
 
           //queue entry tables 
         
-           this.db.runSync(`
+           await this.db.prepareAsync(`
+             PRAGMA journal_mode = WAL;
              CREATE TABLE IF NOT EXISTS queue_entries (
                id TEXT PRIMARY KEY,
                queue_id TEXT NOT NULL,
@@ -115,14 +118,15 @@ const DB_VERSION = 1;
                estimated_wait_time INTEGER,
                notes TEXT,
                FOREIGN KEY (queue_id) REFERENCES queues(id) ON DELETE CASCADE,
-               FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-             );
+               FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+               )
           `);
 
 
           //queue history table for analytics 
 
-           this.db.runSync(`
+           await this.db.prepareAsync(`
+            PRAGMA journal_mode = WAL;
             CREATE TABLE IF NOT EXISTS queue_history (
                id INTGER PRIMARY KEY AUTOINCREMENT,
                queue_id TEXT NOT NULL,
@@ -136,15 +140,16 @@ const DB_VERSION = 1;
                rating INTEGER CHECK(rating >= 1 AND rating <= 5),
                feedback TEXT,
                FOREIGN KEY (queue_id) REFERENCES queues(id),
-               FOREIGN KEY (user_id) REFERENCES users(id)
-            );
+               FOREIGN KEY (user_id) REFERENCES users(id),
+               )       
           `);
 
 
           //notification tables 
 
-          this.db.runSync(`
-            CREATE TABLE IF NOT EXISTS notifications (
+          await this.db.prepareAsync(`
+            PRAGMA journal_mode = WAL;
+            CREATE TABLE IF NOT EXISTS notifications ( 
                id TEXT PRIMARY KEY,
                user_id TEXT NOT NULL,
                title TEXT NOT NULL,
@@ -153,8 +158,8 @@ const DB_VERSION = 1;
                data TEXT,
                is_read INTEGER DEFAULT 0,
                created_at INTEGER NOT NULL,
-               FOREIGN KEY (user_id) REFERENCES users(id) on DELETE CASCADE
-            ); 
+               FOREIGN KEY (user_id) REFERENCES users(id) on DELETE CASCADE  
+               )          
           `);
 
 
@@ -163,21 +168,19 @@ const DB_VERSION = 1;
          this.createIndexes();
        } 
 
-       private  createIndexes() : void {
+       private createIndexes() : void {
 
          const indexes = [
-           'CREATE INDEX IF NOT EXISTS idx_queues_business_id ON queues(business_id)',
-           'CREATE INDEX IF NOT EXISTS idx_queues_status ON queues(status)',
-           'CREATE INDEX IF NOT EXISTS idx_queue_entries_queue_id ON queue_entries(queue_id)',
-           'CREATE INDEX IF NOT EXISTS idx_queue_entries_user_id ON queue_entries(user_id)',
-           'CREATE INDEX IF NOT EXISTS idx_queue_entries_status ON queue_entries(status)',
-           'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)',
-          
-           
+           `CREATE INDEX IF NOT EXISTS idx_queues_business_id ON queues(business_id)`,
+           `CREATE INDEX IF NOT EXISTS idx_queues_status ON queues(status)`,
+           `CREATE INDEX IF NOT EXISTS idx_queue_entries_queue_id ON queue_entries(queue_id)`,
+           `CREATE INDEX IF NOT EXISTS idx_queue_entries_user_id ON queue_entries(user_id)`,
+           `CREATE INDEX IF NOT EXISTS idx_queue_entries_status ON queue_entries(status)`,
+           `CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)`,
          ];
 
-        indexes.forEach(indexSQL => {
-          this.db.runAsync(indexSQL);
+         indexes.forEach(indexSQL => {
+           this.db.runSync(indexSQL);
         });
       }
 
@@ -266,7 +269,7 @@ const DB_VERSION = 1;
 
       public async getDatabaseInfo() {
           const tables = await this.getAllAsync<{name : string}>(
-             "SELECT name FROM sqlite_master WHERE type='table'  ORDER BY name"
+             `SELECT name FROM sqlite_master WHERE type='table'  ORDER BY name`
           );
 
           return {
@@ -288,7 +291,7 @@ const DB_VERSION = 1;
     export const databaseService = DatabaseService.getInstance();
 
     
-    export default DatabaseService;
+    export { DatabaseService };
 
    
 
