@@ -1,6 +1,6 @@
 import '../global.css';
 import { useEffect , useState } from 'react';
-import { Stack } from 'expo-router';
+import { Slot, Stack } from 'expo-router';
 import {View , Text , ActivityIndicator} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { databaseService } from '../src/services/database/database.service';
@@ -26,9 +26,12 @@ export default function RootLayout() {
              await databaseService.intialize();
 
              setIsDbReady(true);
+             console.log('DB ready');
 
+             console.log('Initializing auth...');
 
              await intialize();
+             console.log('Auth ready');
 
          } catch(err) {
             console.error('App initialization error:' , err);
@@ -60,54 +63,24 @@ export default function RootLayout() {
 
     if(!isDbReady || isLoading) {
        return (
-         <View className='flex-1 justify-center items-center bg-gradient-to-br from-blue-50 to-indigo-50'>
-           <View className='items-center space-y-4'>
-             <View className='bg-white p-8 rounded-full shadow-lg'>
-              <ActivityIndicator size="large" color="#3b82f6"/>
-             </View>
-
-             <Text className='text-gray-600 text-lg font-medium mt-4'>
-               Initializing...
+         <View className='flex-1 justify-center items-center bg-white'>
+           <View className='items-center'>
+             <ActivityIndicator size='large' color='#3b82f6'/>
+             <Text className='text-gray-600 text=lg font-medium mt-4'>
+               Loading...
              </Text>
-
-             <View className='flex-row space-x-1 mt-2'>
-              <View className='w-2 h-2 bg-blue-400 rounded-full animate-bounce' />
-             
-                <View className='w-2 h-2 bg-blue-500 rounded-full animate-bounce dealy-100' />
-
-                <View className='w-2 h-2 bg-blue-600 rounded-full animate-bounce dealy-200'/>
-             </View>
            </View>
-
          </View>
        );
     }
 
-
     return (
        <>
         <StatusBar style='auto'/>
-
-         <Stack screenOptions={{
-             headerStyle :  {
-                backgroundColor : '#3b82f6',
-             },
-
-             headerTintColor : '#fff',
-             headerTitleStyle : {
-                fontWeight : '600',
-             },
-             headerShadowVisible : false,
-         }}>
-
-          <Stack.Screen name='index' options={{headerShown : false}} />
-          <Stack.Screen name='(auth)' options={{headerShown : false}} />
-          <Stack.Screen name='(user)' options={{headerShown : false}} />
-          <Stack.Screen name='(business)' options={{headerShown : false}}/>
-         </Stack>
-       
+        <Slot />
        </>
     )
+
 
 
 
