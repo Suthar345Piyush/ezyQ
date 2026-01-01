@@ -2,7 +2,7 @@
 
 import {create} from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import { User, UserRole } from '../types';
+import { User } from '../types';
 
 
 interface AuthState {

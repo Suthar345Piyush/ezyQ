@@ -17,7 +17,7 @@ export interface CreateUserDTO {
    id : string;
    name : string;
    email : string;
-   phone? : number;
+   phone? : string;
    role : UserRole;
    avatar_url? : string;
 }

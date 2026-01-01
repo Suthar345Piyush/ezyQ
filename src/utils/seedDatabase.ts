@@ -1,9 +1,9 @@
 // making dummy data , to test the db and seeding it dummy data , for dev purpose only  
 
-import {UserRepository} from '.././src/services/database/repositories/UserRepository';
-import {QueueRepository} from '.././src/services/database/repositories/QueueRepository';
-import { QueueEntryRepository } from '.././src/services/database/repositories/QueueEntryRepository';
-import { generateId } from '../utils/index';
+import {UserRepository} from '../services/database/repositories/UserRepository';
+import {QueueRepository} from '../services/database/repositories/QueueRepository';
+import { QueueEntryRepository } from '../services/database/repositories/QueueEntryRepository';
+import { generateId } from './index';
 
 
 //creating demo data to test the db working  
@@ -226,7 +226,7 @@ export async function seedDatabase() {
  //clearing all demo data 
 
  export async function clearDemoData() {
-   const {databaseService} = await import('.././src/services/database/database.service');
+   const {databaseService} = await import('../services/database/database.service');
    await databaseService.clearAllData();
    console.log('All demo data cleared');
  }
