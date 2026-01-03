@@ -220,7 +220,7 @@ export const formatPercentage = (value : number , total : number ) : string => {
       func : T , wait : number
  ) : ((...args : Parameters<T>) => void) => {
      
-      let timeout : NodeJS.Timeout;
+       let timeout : NodeJS.Timeout;
 
       return (...args : Parameters<T>) => {
          clearTimeout(timeout);
