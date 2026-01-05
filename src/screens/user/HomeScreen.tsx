@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
     return (
-       <SafeAreaView style={{flex : 1}}>
+       <SafeAreaView style={{flex : 1 , backgroundColor : "black"}}>
         <YStack f={1} jc="center" ai="center" bg="$background" p="$6">
           <Text fontSize="$8" fontWeight="bold" color="$gray12" mb="$4">
              User Home Screen
