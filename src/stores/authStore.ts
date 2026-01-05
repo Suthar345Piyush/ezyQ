@@ -25,12 +25,16 @@ const USER_KEY = 'auth_user';
 
 
 export const useAuthStore = create<AuthState>(( set , get) => ({
+
+    //initial state 
+
      user : null,
      isAuthenticated : false,
      isLoading : true,
 
 
-     
+     //setting user 
+
     setUser : (user) => set({
       user,
       isAuthenticated : !!user
@@ -41,9 +45,10 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
     login : async(user , token) => {
 
          try{
+          console.log('🔐 Logging in user:', user.email);
 
               //saving token securely 
-
+              
               await SecureStore.setItemAsync(TOKEN_KEY , token);
 
             // saving user data 
@@ -55,6 +60,8 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
               isAuthenticated : true,
               isLoading : false,
             });
+
+            console.log('✅ User logged in successfully');
          }
          
          catch(error) {
@@ -69,6 +76,8 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
      logout : async () => {
          try {
 
+          console.log('🚪 Logging out...');
+
            await SecureStore.deleteItemAsync(TOKEN_KEY);
            await SecureStore.deleteItemAsync(USER_KEY);
 
@@ -78,6 +87,8 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
               isAuthenticated : false,
               isLoading : false
            });
+
+           console.log('✅ User logged out');
 
          } catch(error) {
            console.error('Logout error:' , error);
@@ -112,6 +123,8 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
      initialize : async () => {
 
         try {
+
+          console.log('🔄 Initializing auth...');
            set({isLoading : true});
 
            const token = await SecureStore.getItemAsync(TOKEN_KEY);
@@ -122,12 +135,15 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
              
              const user = JSON.parse(userStr) as User;
 
+             console.log('✅ Session restored for:', user.email);
+
              set({
                user,
                isAuthenticated : true,
                isLoading : false,
              });
            } else {
+             console.log('No saved session found');
               set({
                  user : null,
                  isAuthenticated : false,

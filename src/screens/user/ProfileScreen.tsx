@@ -8,7 +8,7 @@ export default function ProfileScreen() {
    const {user , logout} = useAuthStore();
 
    return (
-      <SafeAreaView style={{flex : 1}}>
+      <SafeAreaView style={{flex : 1 , backgroundColor : "black"}}>
         <YStack f={1} jc="center" ai="center" bg="$background" p="$6" gap="$4">
 
           <Text fontSize="$8" fontWeight="bold" color="$gray12">
