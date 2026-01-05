@@ -50,7 +50,7 @@ export default function BusinessNavigator() {
 
             <Tab.Screen name="Profile" component={ProfileScreen} options={{
                tabBarIcon : ({color , size}) => (
-                 <Ionicons name="settings" size={size} color={color}/>
+                 <Ionicons name="" size={size} color={color}/>
                ),
             }}/>
 
