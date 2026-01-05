@@ -113,7 +113,7 @@ export default function App() {
 
     return (
        <TamaguiProvider config={tamaguiConfig}>
-        <Theme name="light">
+        <Theme name="dark">
           <SafeAreaProvider>
             <NavigationContainer>
               <StatusBar style="auto"/>

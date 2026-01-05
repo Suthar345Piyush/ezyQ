@@ -149,7 +149,7 @@ export const useAuthStore = create<AuthState>(( set , get) => ({
 
 
 //function to get auth token 
-``
+
 export const getAuthToken = async () : Promise<string | null>  => {
    try {
      return await SecureStore.getItemAsync(TOKEN_KEY);
