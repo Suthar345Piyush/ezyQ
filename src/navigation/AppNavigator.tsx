@@ -17,7 +17,7 @@ export default function AppNavigator() {
 
     return (
         <Stack.Navigator>
-           {isAuthenticated ? (
+           {!isAuthenticated ? (
              <Stack.Screen name="Auth" component={AuthNavigator}/>
            ) : user?.role === 'business' ? (
              <Stack.Screen name="Business" component={BusinessNavigator}/>
