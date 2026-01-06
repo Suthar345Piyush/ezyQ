@@ -36,17 +36,17 @@ export default function  WelcomeScreen({navigation} : Props) {
             {/* title    */}
 
             <YStack ai="center">
-              <Text fontSize="$11" fontWeight="800" color="$gray12" ta="center" mb="$2">
+              <Text fontSize="$11" fontWeight="800" color="$blue10Light" ta="center" mb="$2">
                  EzyQ
               </Text>
 
-              <YStack h={6} w={96} bg="$blue10" br="$10"/>
+              <YStack h={6} w={96} bg="$black" br="$10"/>
             </YStack>
 
 
             {/* subtitle  */}
 
-            <Text fontSize="$5" color="$gray11" ta="center" fontWeight="500" mt="$6" px="$4">
+            <Text fontSize="$5" color="$gray11" ta="center" fontWeight="500" mt="$1" px="$4">
                Skip the wait , manage your time{'\n'}Join queues instantly⚡
             </Text>
           </YStack>

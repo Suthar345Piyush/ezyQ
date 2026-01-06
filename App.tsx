@@ -94,7 +94,7 @@ export default function App() {
                     <YStack bg="$blue2" p="$8" br="$12" shadowColor="$shadowColor" shadowRadius={8}>
                       <Spinner size="large" color="$blue10"/>
                     </YStack>
-                    <Text color="$blue" fontSize="$6" fontWeight="bold">
+                    <Text color="$gray12" fontSize="$6" fontWeight="bold">
                       EzyQ
                     </Text>
                     <Text color="$gray10" fontSize="$3" mt="$2">
