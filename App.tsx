@@ -11,6 +11,7 @@ import AppNavigator from "./src/navigation/AppNavigator";
 import { databaseService } from "./src/services/database/database.service";
 import { useAuthStore } from "./src/stores/authStore";
 import { YStack , Text , Spinner } from "tamagui";
+import WelcomeScreen from "./src/screens/auth/WelcomeScreen";
 
 
 export default function App() {
@@ -94,7 +95,7 @@ export default function App() {
                     <YStack bg="$blue2" p="$8" br="$12" shadowColor="$shadowColor" shadowRadius={8}>
                       <Spinner size="large" color="$blue10"/>
                     </YStack>
-                    <Text color="$gray11" fontSize="$6" fontWeight="600">
+                    <Text color="$gray11" fontSize="$6" fontWeight="bold">
                       EzyQ
                     </Text>
                     <Text color="$gray10" fontSize="$3" mt="$2">

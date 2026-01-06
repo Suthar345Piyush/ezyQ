@@ -4,7 +4,7 @@ import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { YStack , Text , XStack , Button , Card , Circle } from "tamagui";
 import { Ionicons } from "@expo/vector-icons";
-import { AuthStackScreenProps } from "@/src/types/navigation.types";
+import type  { AuthStackScreenProps } from "@/src/types/navigation.types";
 
 type Props = AuthStackScreenProps<'Welcome'>;
 
