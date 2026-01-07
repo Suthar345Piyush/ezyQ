@@ -46,7 +46,7 @@ export default function  WelcomeScreen({navigation} : Props) {
 
             {/* subtitle  */}
 
-            <Text fontSize="$5" color="$gray11" ta="center" fontWeight="500" mt="$1" px="$4">
+            <Text fontSize="$5" color="$black" ta="center" fontWeight="500" mt="$1" px="$4">
                Skip the wait , manage your time{'\n'}Join queues instantly⚡
             </Text>
           </YStack>
@@ -89,11 +89,11 @@ export default function  WelcomeScreen({navigation} : Props) {
 
             {/* get started button  */}
 
-            <Button size="$6" theme="blue" onPress={() => navigation.navigate('RoleSelection')}
+            <Button size="$6" theme="dark" onPress={() => navigation.navigate('RoleSelection')}
                br="$6" pressStyle={{scale : 0.98}} shadowColor="$shadowColor" shadowRadius={12} shadowOpacity={0.3}>
               <XStack ai="center" gap="$3">
                 <Text color="white" fontSize="$6" fontWeight="bold">Get Started</Text>
-                <Ionicons name="arrow-forward-circle" size={28} color="#fff"/>
+                <Ionicons name="arrow-forward-circle" size={28} color="white"/>
               </XStack>
             </Button>
          </YStack>

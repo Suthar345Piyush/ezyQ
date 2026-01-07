@@ -4,6 +4,7 @@ import { useState } from "react";
 import { YStack , XStack , Text , Button , Card} from "tamagui";
 import { AuthStackScreenProps } from "@/src/types/navigation.types";
 import { UserRole } from "@/src/types";
+import { ScrollView } from "react-native";
 
 
 type Props = AuthStackScreenProps<'RoleSelection'>;
@@ -24,6 +25,7 @@ export default function RoleSelectionScreen({navigation} : Props) {
 
 
     return (
+      <ScrollView  showsHorizontalScrollIndicator={false}>
        <SafeAreaView style={{flex : 1 , backgroundColor : 'white'}}>
 
             {/* header  */}
@@ -90,6 +92,7 @@ export default function RoleSelectionScreen({navigation} : Props) {
               </Button>
             </YStack>
        </SafeAreaView>
+      </ScrollView>
     );
 
 
