@@ -184,13 +184,76 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
                      }}
                    />
                ))}
-
              </XStack>
            </YStack>
 
 
            {/* otp resend styling part    */}
  
+          <XStack ai="center" gap="$2" mb="$8">
+            <Text fontSize="$3" color="$gray11">
+               Didn't receive code?
+            </Text>
+
+            {canResend ? (
+                <Button unstyled onPress={handleResendOtp} pressStyle={{opacity : 0.7}}>
+                  <Text fontSize="$3" color={isUser ? '$blue10' : '$green10'} fontWeight="bold">
+                     Resend OTP
+                  </Text>
+               
+                </Button>
+            ) : (
+                <Text fontSize="$3" color="$gray10" fontWeight="600">
+                  Resend in {resendTimer}s
+                </Text>
+            )}
+
+          </XStack>
+
+
+           {/* verify button  */}
+
+           <YStack w="100%">
+
+            <Button size="$6" br="$4" bg={isUser ? '$blue10' : '$green10'} onPress={handleVerify} pressStyle={{scale : 0.98}} disabled={loading || otp.join('').length !== 6} opacity={otp.join('').length !== 6 ? 0.5 : 1}> 
+
+            {
+               loading ? (
+                   <Text color="white" fontSize="$5" fontWeight="bold">
+                       Verifying...
+                   </Text>
+               ) : (
+                   <XStack ai="center" gap="$3">
+                     <Text fontSize="$5" color="white" fontWeight="bold">
+                        Verify & Continue
+                     </Text>
+                     <Ionicons name="checkmark-circle" size={24} color="white"/>
+                   </XStack>
+               )
+            }
+              </Button>
+           </YStack>
+
+
+           {/* information text part of the page  */}
+
+         <YStack mt="$8" bg="$gray12" p="$4" br="$4" w="100%">
+                <XStack gap="$3">
+                  <Ionicons name="information-circle" size={20} color="#6b7280"/>
+                  <YStack f={1}>
+                     <Text>
+                        {isNewUser ? 'Please verify your email to complete registration' : 'Enter the OTP sent to your email to login securely'}
+                     </Text>
+
+                  </YStack>
+
+               </XStack>
+          </YStack>
+
+         
+         
+
+            
 
 
              </YStack>
