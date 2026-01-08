@@ -47,7 +47,7 @@ export default function LoginScreen({navigation , route} : Props) {
 
 
      return (
-        <SafeAreaView style={{flex : 1 , backgroundColor : 'black'}}>
+        <SafeAreaView style={{flex : 1 , backgroundColor : 'white'}}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex :1}}>
 
             <ScrollView showsVerticalScrollIndicator={false}>
