@@ -37,7 +37,9 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
 
 
      const handleOtpChange = (value : string | any , index : number) => {
-
+ 
+   // for temparory time going for any ,  soon will change it with proper way to take value 
+        
        const textValue = typeof value === 'string' ? value : value?.nativeEvent?.text || '';
 
 

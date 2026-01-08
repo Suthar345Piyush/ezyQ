@@ -1,80 +1,77 @@
-// register screen for both user and business 
+// Register Screen for both User and Business
 
-import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView  , KeyboardAvoidingView , Platform} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { YStack , XStack , Text , Button , Input , Separator , Checkbox } from "tamagui";
-import { AuthStackScreenProps } from "@/src/types/navigation.types";
+import { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { YStack, XStack, Text, Button, Input, Separator, Checkbox } from 'tamagui';
+import { AuthStackScreenProps } from '../../types/navigation.types';
 
 type Props = AuthStackScreenProps<'Register'>;
 
-export default function RegisterScreen({navigation , route} : Props) {
-     const {role} = route.params;
-     const isUser = role === 'user';
+export default function RegisterScreen({ navigation, route }: Props) {
+  const { role } = route.params;
+  const isUser = role === 'user';
 
+  // User fields
 
-     const [fullName , setFullName] = useState('');
-     const [email , setEmail] = useState('');
-     const [password  , setPassword]  = useState('');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  // Business fields
 
+  const [businessName, setBusinessName] = useState('');
+  const [businessEmail, setBusinessEmail] = useState('');
+  
+  // Common
 
-     const [businessName , setBusinessName] = useState('');
-     const [businessEmail , setBusinessEmail] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  const handleRegister = async () => {
 
-  // common in both user and business 
+    // Validation
 
-  const [showPassword , setShowPassword] = useState(false);
-   const [agreeToTerms , setAgreeToTerms] = useState(false);
-   const [loading , setLoading] = useState(false);
+    if (isUser) {
+      if (!fullName || !email || !password) {
+        alert('Please fill all fields');
+        return;
+      }
+    } else {
+      if (!businessName || !businessEmail || !password) {
+        alert('Please fill all fields');
+        return;
+      }
+    }
 
+    if (!agreeToTerms) {
+      alert('Please agree to terms and conditions');
+      return;
+    }
 
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters');
+      return;
+    }
 
-   const handleRegister = async () => {
+    setLoading(true);
        
-       // basic validation 
+    // soon will using resend email api to send emails to user
 
-       if(isUser) {
-          if(!fullName || !email || !password) {
-             alert('Please fill all the fields');
-             return;
-          }
-       } else {
-        if(!businessName || !businessEmail || !password) {
-          alert('Please fill all the fields');
-          return;
-       }
-      }
+    setTimeout(() => {
+      setLoading(false);
+      navigation.navigate('OTPVerification', {
+        email: isUser ? email : businessEmail,
+        role,
+        isNewUser: true,
+        name: isUser ? fullName : businessName,
+      });
+    }, 1500);
+  };
 
-
-      if(!agreeToTerms){
-         alert('Please agree to terms and conditions');
-         return;   
-      }
-
-
-      if(password.length < 6) {
-         alert('Password length be more than 6 characters');
-         return;
-      }
-
-       setLoading(true);
-
-
-       setTimeout(() => {
-          setLoading(false);
-
-           navigation.navigate('OTPVerification' , {
-             email : isUser ? email : businessEmail,
-             role,
-             isNewUser : true,
-             name : isUser ? fullName : businessName,
-           });
-       } , 1500);
-   };
-
-   return (
+  return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -82,9 +79,7 @@ export default function RegisterScreen({navigation , route} : Props) {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
 
-
-
-          {/* Header */}
+          {/* Header of the screen*/}
 
           <XStack px="$6" py="$4" ai="center">
             <Button
@@ -98,9 +93,8 @@ export default function RegisterScreen({navigation , route} : Props) {
 
           <YStack px="$6" pt="$4" pb="$8">
 
+            {/* Title Section */}
 
-
-            {/* title Section */}
 
             <YStack mb="$8">
               <YStack
@@ -125,12 +119,14 @@ export default function RegisterScreen({navigation , route} : Props) {
               </Text>
             </YStack>
 
-            {/* form code */}
+            {/*  Form content */}
 
 
             <YStack gap="$4">
 
-              {/* User: user name , business : name of the company / business */}
+
+              {/* user: full name /business: Business Name */}
+
 
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
@@ -141,13 +137,13 @@ export default function RegisterScreen({navigation , route} : Props) {
                   br="$4"
                   px="$4"
                   ai="center"
+                  h={56}
                   bw={2}
                   bc="$gray5"
-                  focusStyle={{ bc: isUser ? '$blue8' : '$green8' }}
                 >
                   <Ionicons
                     name={isUser ? 'person-outline' : 'storefront-outline'}
-                    size={20}
+                    size={22}
                     color="#9ca3af"
                   />
                   <Input
@@ -155,17 +151,16 @@ export default function RegisterScreen({navigation , route} : Props) {
                     flex={1}
                     placeholder={`Enter your ${isUser ? 'full name' : 'business name'}`}
                     value={isUser ? fullName : businessName}
-                    onChangeText={(e) => setFullName(e.nativeEvent.text)}
-                    size="$4"
-                    py="$4"
+                    onChangeText={isUser ? ((e) => setFullName(e.nativeEvent.text)) : ((e) => setBusinessName(e.nativeEvent.text))}
+                    size="$5"
                     ml="$3"
+                    placeholderTextColor="$gray10"
                   />
                 </XStack>
               </YStack>
 
 
-
-              {/* Email Input */}
+              {/* email input */}
 
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
@@ -176,29 +171,29 @@ export default function RegisterScreen({navigation , route} : Props) {
                   br="$4"
                   px="$4"
                   ai="center"
+                  h={56}
                   bw={2}
                   bc="$gray5"
-                  focusStyle={{ bc: isUser ? '$blue8' : '$green8' }}
                 >
-                  <Ionicons name="mail-outline" size={20} color="#9ca3af" />
+                  <Ionicons name="mail-outline" size={22} color="#9ca3af" />
                   <Input
                     unstyled
                     flex={1}
                     placeholder={`Enter your ${isUser ? 'email' : 'business email'}`}
                     value={isUser ? email : businessEmail}
-                    onChangeText={(e) => setEmail(e.nativeEvent.text)}
+                    onChangeText={isUser ? ((e) => setEmail(e.nativeEvent.text)) : ((e) => setBusinessEmail(e.nativeEvent.text))}
                     keyboardType="email-address"
                     autoCapitalize="none"
-                    size="$4"
-                    py="$4"
+                    size="$5"
                     ml="$3"
+                    placeholderTextColor="$gray10"
                   />
                 </XStack>
               </YStack>
 
 
 
-              {/* Password Input */}
+              {/* password input */}
 
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
@@ -209,22 +204,22 @@ export default function RegisterScreen({navigation , route} : Props) {
                   br="$4"
                   px="$4"
                   ai="center"
+                  h={56}
                   bw={2}
                   bc="$gray5"
-                  focusStyle={{ bc: isUser ? '$blue8' : '$green8' }}
                 >
-                  <Ionicons name="lock-closed-outline" size={20} color="#9ca3af" />
+                  <Ionicons name="lock-closed-outline" size={22} color="#9ca3af" />
                   <Input
                     unstyled
                     flex={1}
                     placeholder="Create a password (min. 6 characters)"
                     value={password}
-                    onChangeText={(e) => setPassword(e.nativeEvent.text)}
+                    onChangeText={((e) => setPassword(e.nativeEvent.text))}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
-                    size="$4"
-                    py="$4"
+                    size="$5"
                     ml="$3"
+                    placeholderTextColor="$gray10"
                   />
                   <Button
                     unstyled
@@ -233,7 +228,7 @@ export default function RegisterScreen({navigation , route} : Props) {
                   >
                     <Ionicons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                      size={20}
+                      size={22}
                       color="#9ca3af"
                     />
                   </Button>
@@ -243,9 +238,8 @@ export default function RegisterScreen({navigation , route} : Props) {
                 </Text>
               </YStack>
 
+              {/* Terms and Conditions sections checkbox */}
 
-
-              {/* Terms and Conditions */}
 
               <XStack ai="center" gap="$3" mt="$2">
                 <Checkbox
@@ -256,10 +250,12 @@ export default function RegisterScreen({navigation , route} : Props) {
                   borderWidth={2}
                   borderColor="$gray8"
                 >
+
                   <Checkbox.Indicator>
-                    <Ionicons name="checkmark" size={16} color="white" />
+                    <Ionicons name="checkmark" size={16} color={isUser ? '$blue' : '$green'} />
                   </Checkbox.Indicator>
                 </Checkbox>
+
                 <XStack f={1} flexWrap="wrap" ai="center">
                   <Text fontSize="$3" color="$gray11">
                     I agree to the{' '}
@@ -277,8 +273,7 @@ export default function RegisterScreen({navigation , route} : Props) {
               </XStack>
 
 
-
-              {/* Register Button */}
+              {/* register Button */}
 
               <Button
                 size="$6"
@@ -306,7 +301,7 @@ export default function RegisterScreen({navigation , route} : Props) {
 
 
 
-            {/* Divider - to separate components */}
+            {/* divider using separator */}
 
             <XStack ai="center" my="$6" gap="$4">
               <Separator flex={1} />
@@ -316,9 +311,7 @@ export default function RegisterScreen({navigation , route} : Props) {
               <Separator flex={1} />
             </XStack>
 
-
-
-            {/* Login Link */}
+            {/* login link to login page  */}
 
             <XStack jc="center" gap="$2">
               <Text fontSize="$4" color="$gray11">
@@ -343,6 +336,4 @@ export default function RegisterScreen({navigation , route} : Props) {
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-
 }
-
