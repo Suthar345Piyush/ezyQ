@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView , TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { YStack , XStack , Text , Button , Input , Circle, inputSizeVariant } from "tamagui";
+import { YStack , XStack , Text , Button , Input , Circle } from "tamagui";
 import { AuthStackScreenProps } from "@/src/types/navigation.types";
 
 type Props = AuthStackScreenProps<'OTPVerification'>;
@@ -21,7 +21,7 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
      const [canResend , setCanResend]  = useState(false);
 
 
-     const inputRefs = useRef<(TextInput | null[])>([]);
+     const inputRefs = useRef<any[]>([]);
 
      // timer to resend the otp 
 
@@ -36,8 +36,13 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
 
 
 
-     const handleOtpChange = (value : string , index : number) => {
-        if(isNaN(Number(value))) return;
+     const handleOtpChange = (value : string | any , index : number) => {
+
+       const textValue = typeof value === 'string' ? value : value?.nativeEvent?.text || '';
+
+
+          if(textValue.length > 1) return;
+        if( textValue && isNaN(Number(value))) return;
 
 
         const newOtp = [...otp];
@@ -45,7 +50,7 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
         setOtp(newOtp);
 
 
-        //auto focus on the next input  
+        // focus automatically on the next input from user  
 
         if(value && index < 5) {
            inputRefs.current[index + 1]?.focus();
@@ -162,15 +167,14 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
                {otp.map((digit , index) => (
                    <Input 
                      key={index}
-                     ref={(ref) => (inputRefs.current[index] = ref as any)}
+                     ref={(ref : any) => (inputRefs.current[index] = ref as any)}
                      value={digit}
-                     onChangeText={(value) => handleOtpChange(digit , index)}
+                     onChangeText={(value) => handleOtpChange(value , index)}
                      onKeyPress={(e) => handleKeyPress(e , index)}
                      maxLength={1}
                      keyboardType="number-pad"
                      textAlign="center"
                      size="$8"
-                     fontWeight="bold"
                      w={50}
                      h={60}
                      br="$4"
