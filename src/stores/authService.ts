@@ -96,25 +96,161 @@ export class AuthService {
                 };
             }
 
-            
+            //checking for otp expiration 
+
+            if(Date.now() > stored.expiresAt){
+                otpStorage.delete(normalizedEmail);
+
+                return {
+                   success : false , error : 'OTP expired. Please request again for new one.'
+                }
+            }
+
+             // verifying the otp with original one  
+
+            if(stored.otp !== otp){
+               return {success : false , error : 'Wrong OTP'}
+            };
+
+            // after verification , removing it from storage 
+
+            otpStorage.delete(normalizedEmail);
 
 
+            return {success : true}
 
           } catch(error) {
-             
+             console.error('OTP Verification failed' , error);
+             return {success : false , error : 'Failed to verify OTP'};
           }
+      }
 
+      
+
+      // new user registration 
+
+      static async register(email : string , name : string , role : UserRole , phone?: string) : Promise<{success : boolean , user? : User , error? : string}> {
           
+         
+          try {
+
+               // simplyfying the input email 
+
+                const  normalizedEmail = email.toLowerCase();
+
+
+                // checking if user already exists in storage  
+
+                const existingUser = await UserRepository.getByEmail(normalizedEmail);
+
+                if(existingUser) {
+                   return {success : false , error : 'User already exists with this email'};
+                }
+
+
+                //creating a new user 
+
+                const newUser = await UserRepository.create({
+                   id : generateId(),
+                   name,
+                   email : normalizedEmail,
+                   phone,
+                   role,
+                });
+
+                console.log('User Registered' , newUser.email);
+                return {success : true , user : newUser}
+
+          } catch(error) {
+
+            console.error('User Registration failed' , error);
+            return {success : false , error : 'Failed to register user'};
+         
+          }
       }
 
 
 
+      // login the already existing user in the app 
 
+      static async login(email : string) : Promise<{success : boolean , user?: User , error?: string}> {
+           
+          try {
+
+             const normalizedEmail = email.toLowerCase();
+
+
+             //finding the user 
+
+             const user = await UserRepository.getByEmail(normalizedEmail);
+
+             if(!user) {
+                return {
+                   success : false , error : 'No account found with this email'
+                };
+             }
+
+
+             console.log('User logged in:' , user.email);
+
+             return {success : true , user};
+
+          } catch(error) {
+             console.error('Login error:' , error);
+             return {success : false , error : 'Failed to login user'};
+          }
+      }
+
+
+      //checking the email exists or not  
+
+      static async checkEmailExists(email : string) : Promise<boolean> {
+
+          try {
+
+              return await UserRepository.emailExists(email.toLowerCase());
+
+          } catch(error) {
+             console.error('Email checking failed' , error);
+             return false;
+
+          }
+      }
+
+
+      // generating auth token - soon will use JWT for token creation (demo implementation)
+
+      static generateAuthToken(userId : string) : string {
+          
+          // jwt for actual token generation 
+
+          const timestamp = Date.now();
+
+          const random = Math.random().toString(36).substring(7);
+
+          return `${userId}_${timestamp}_${random}`;
+
+      }
+
+      // deleting the expired otp's from storage  
       
+      static clearExpiredOTP() : void {
 
+          const now = Date.now();
+ 
+          // clearing the email = key , data = value (clearing this key:value pair from otpstorage map)   
 
+           for(const [email , data] of otpStorage.entries()) {
+               if(now > data.expiresAt){
+                  otpStorage.delete(email);
+               }
 
+           }
 
-
-
+      }
+ 
 }
+
+
+export default AuthService;
+
