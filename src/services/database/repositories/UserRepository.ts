@@ -1,6 +1,6 @@
 // user repo code here 
 
-import { databaseService } from "../database.service";
+import { databaseService } from "@/src/services/database/database.service";
 import { User , CreateUserDTO } from "@/src/types";
 
 

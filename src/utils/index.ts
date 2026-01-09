@@ -1,6 +1,7 @@
 // utility functions code 
 
 import {format , formatDistance , formatDistanceToNow} from 'date-fns';
+import {setTimeout} from 'timers';
 
 // ====== generating id =======
 
@@ -214,20 +215,25 @@ export const formatPercentage = (value : number , total : number ) : string => {
  };
 
  
- // debounce the function 
+ // debouncing  the function  
 
  export const debounce = <T extends (...args : any[]) => any> (
       func : T , wait : number
  ) : ((...args : Parameters<T>) => void) => {
      
-       let timeout : NodeJS.Timeout;
+       let timeout : ReturnType<typeof setTimeout>
 
       return (...args : Parameters<T>) => {
+
+        // casting the variable to number  
+
          clearTimeout(timeout);
 
          timeout = setTimeout(() => func(...args) , wait);
       };
  };
+
+
 
  /// storage helper function 
 
