@@ -1,8 +1,8 @@
 // auth service code to handle auth related functionality 
 
-import {UserRepository} from "../services/database/repositories/UserRepository";
-import {User , UserRole} from "../types";
-import { generateId } from "../utils";
+import {UserRepository} from "@/src/services/database/repositories/UserRepository";
+import {User , UserRole} from "@/src/types/index";
+import { generateId } from "@/src/utils/index";
 
 
 // in memory otp storage for now  (in future redis is being used)
@@ -78,6 +78,37 @@ export class AuthService {
 
 
       //verify the OTP 
+
+      static async verifyOTP(email : string , otp : string) : Promise<{success : boolean; error? : string}> {
+           
+          try {
+
+            // simplyfying the input email 
+              
+            const normalizedEmail = email.toLowerCase();
+            const stored = otpStorage.get(normalizedEmail);
+
+
+
+            if(!stored) {
+                return {
+                   success : false , error : 'OTP expired. Please request again to get new one.'
+                };
+            }
+
+            
+
+
+
+          } catch(error) {
+             
+          }
+
+          
+      }
+
+
+
 
       
 
