@@ -8,7 +8,7 @@ export default function SettingsScreen() {
     const {user , logout} = useAuthStore();
 
     return (
-       <SafeAreaView style={{flex : 1}}>
+       <SafeAreaView style={{flex : 1 , backgroundColor : 'white'}}>
         <YStack f={1} jc="center" ai="center" bg="$background" p="$6">
            <Text fontSize="$8" fontWeight="bold" color="$gray12">
              {user?.name || 'Business'}

@@ -15,8 +15,8 @@ const Tab = createBottomTabNavigator<UserTabParamList>();
 export default function BusinessNavigator() {
     
      return (
-        <Tab.Navigator screenOptions={{headerShown : false , tabBarActiveTintColor : "#3b82f6" ,
-         tabBarInactiveTintColor : "#3b82f6", tabBarStyle : {
+        <Tab.Navigator screenOptions={{headerShown : false , tabBarActiveTintColor : "#3b82f6",
+         tabBarInactiveTintColor : "#9ca3af", tabBarStyle : {
            borderTopWidth : 1,
            borderTopColor : '#e5e7ab',
            height : 60,
