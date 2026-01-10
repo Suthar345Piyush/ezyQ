@@ -60,16 +60,59 @@ export default function RegisterScreen({ navigation, route }: Props) {
        
     // soon will using resend email api to send emails to user
 
-    setTimeout(() => {
-      setLoading(false);
-      navigation.navigate('OTPVerification', {
-        email: isUser ? email : businessEmail,
-        role,
-        isNewUser: true,
-        name: isUser ? fullName : businessName,
+    try {
+        // auth service 
+        
+        const {AuthService} = await import('@/src/stores/authService');
+
+        const emailToCheck = isUser ? email : businessEmail;
+
+        //checking email exist or not  
+
+        const emailExists = await AuthService.checkEmailExists(emailToCheck);
+
+
+        if(emailExists) {
+           alert('Account with this email already exists. Please login.');
+           setLoading(false);
+           return;
+        }
+
+      //requesting the otp for next verification 
+
+      const reqOtp = await AuthService.requestOTP(emailToCheck);
+
+      if(!reqOtp.success) {
+         alert(reqOtp.error || 'Failed to sent OTP');
+         setLoading(false);
+         return;
+      }
+
+
+      // then navigate it to otp screen , in this registering the user/business (it's first time for it )
+
+      navigation.navigate('OTPVerification' , {
+          email : emailToCheck,
+          role,
+          isNewUser : true,
+          name : isUser ? fullName : businessName,
       });
-    }, 1500);
+
+
+    } catch(error) {
+         console.error('Registration error:' , error);
+         alert('An error occurred. Please try again.'); 
+    }  
+       finally {
+          setLoading(false);
+       }
+       
+       
   };
+
+
+
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -238,8 +281,9 @@ export default function RegisterScreen({ navigation, route }: Props) {
                 </Text>
               </YStack>
 
-              {/* Terms and Conditions sections checkbox */}
 
+
+              {/* Terms and Conditions sections checkbox */}
 
               <XStack ai="center" gap="$3" mt="$2">
                 <Checkbox
