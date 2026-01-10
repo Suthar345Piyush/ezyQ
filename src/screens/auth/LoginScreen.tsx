@@ -25,16 +25,56 @@ export default function LoginScreen({ navigation, route }: Props) {
     }
 
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      navigation.navigate('OTPVerification', {
-        email,
-        role,
-        isNewUser: false,
-      });
-    }, 1500);
+   
+     try {
+
+          // importing auth service dynamically here 
+
+          const {AuthService} = await import('@/src/stores/authService');
+
+        // checking if the email exists or not  
+
+        const emailExists = await AuthService.checkEmailExists(email);
+
+        if(!emailExists) {
+           alert('No account found with this email. Please sign up first.');
+           setLoading(false);
+           return;
+        }
+
+
+        //requesting the otp 
+
+        const reqOtp = await AuthService.requestOTP(email);
+
+        if(!reqOtp.success) {
+            alert(reqOtp.error || 'Failed to send OTP');
+            setLoading(false);
+            return;
+        }
+
+
+        // then navigate the user to the otp verification screen , when he get otp 
+
+        navigation.navigate('OTPVerification'  , {
+           email , role , isNewUser : false,
+        });
+     }  
+
+       catch(error) {
+
+           console.error('Login error:' , error);
+           alert('An error occurred. Please try again')
+       } 
+        
+       finally {
+           setLoading(false);
+       }
+
   };
+
+
+ 
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -43,7 +83,9 @@ export default function LoginScreen({ navigation, route }: Props) {
         style={{ flex: 1 }}
       >
         <ScrollView showsVerticalScrollIndicator={false}>
+
           {/* Header */}
+
           <XStack px="$6" py="$4" ai="center">
             <Button
               unstyled
@@ -55,7 +97,9 @@ export default function LoginScreen({ navigation, route }: Props) {
           </XStack>
 
           <YStack px="$6" pt="$4" pb="$8">
+
             {/* Title Section */}
+
             <YStack mb="$8">
               <YStack
                 bg={isUser ? '$blue2' : '$green2'}
@@ -80,12 +124,16 @@ export default function LoginScreen({ navigation, route }: Props) {
             </YStack>
 
             {/* Form */}
+
             <YStack gap="$4">
+
               {/* Email Input */}
+
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
                   {isUser ? 'Email' : 'Business Email'}
                 </Text>
+
                 <XStack
                   bg="$gray2"
                   br="$4"
@@ -112,6 +160,7 @@ export default function LoginScreen({ navigation, route }: Props) {
               </YStack>
 
               {/* Password Input */}
+
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
                   Password
@@ -153,6 +202,7 @@ export default function LoginScreen({ navigation, route }: Props) {
               </YStack>
 
               {/* Forgot Password */}
+
               <XStack jc="flex-end">
                 <Button
                   unstyled
@@ -165,7 +215,9 @@ export default function LoginScreen({ navigation, route }: Props) {
                 </Button>
               </XStack>
 
+
               {/* Login Button */}
+
               <Button
                 size="$6"
                 br="$4"
@@ -190,7 +242,10 @@ export default function LoginScreen({ navigation, route }: Props) {
               </Button>
             </YStack>
 
+
+
             {/* Divider */}
+
             <XStack ai="center" my="$6" gap="$4">
               <Separator flex={1} />
               <Text fontSize="$3" color="$gray10">
@@ -199,7 +254,9 @@ export default function LoginScreen({ navigation, route }: Props) {
               <Separator flex={1} />
             </XStack>
 
+
             {/* Sign Up Link */}
+
             <XStack jc="center" gap="$2">
               <Text fontSize="$4" color="$gray11">
                 Don't have an account?

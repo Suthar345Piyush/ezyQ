@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView , TextInput } from "react-native";
+import { ScrollView  } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { YStack , XStack , Text , Button , Input , Circle } from "tamagui";
 import { AuthStackScreenProps } from "@/src/types/navigation.types";
@@ -23,6 +23,7 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
 
      const inputRefs = useRef<any[]>([]);
 
+
      // timer to resend the otp 
 
      useEffect(() => {
@@ -42,6 +43,8 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
         
        const textValue = typeof value === 'string' ? value : value?.nativeEvent?.text || '';
 
+ 
+       // allowing only single digit
 
           if(textValue.length > 1) return;
         if( textValue && isNaN(Number(value))) return;
@@ -80,32 +83,137 @@ export default function OTPVerificationScreen({navigation , route} : Props) {
 
         setLoading(true);
 
-        setTimeout(() => {
-           setLoading(false);
+        // will soon integrate resend for proper otp email sending functionality 
 
-           // will navigate user/business to their respective boards , id they are legit - TODO
+        try {
 
-           alert('OTP Verified Successfully!');
-        } , 1500);
+              const {AuthService} = await import('@/src/stores/authService');
+              const {useAuthStore} = await import('@/src/stores/authStore');
+
+
+              // firstly we verify the otp 
+              
+              const verifyOtp = await AuthService.verifyOTP(email , otpCode);
+
+
+              // checking for the validness 
+
+              if(!verifyOtp.success) {
+                 alert(verifyOtp.error || 'Invalid OTP');
+                 setLoading(false);
+                 return;
+              }
+
+
+
+              // if it's new user then get him register first 
+
+              if(isNewUser) {
+
+                  const registerResult = await AuthService.register
+                       (email,
+                       route.params.name || 'User',
+                       role
+                       );
+
+
+                       if(!registerResult.success || !registerResult.user) {
+                           alert(registerResult.error || 'Registration Failed');
+                           setLoading(false);
+                           return;
+                       }
+
+                       // setting user in auth store 
+
+                       await useAuthStore.getState().setUser(registerResult.user);
+
+
+                       alert('Registration successfull! Welcome to EzyQ');
+ 
+                   }  else {
+                       
+                     // if this nothing happens means , it's existing user , get him logged in
+
+                      const loginResult = await AuthService.login(email);
+
+                      if(!loginResult.success || !loginResult.user) {
+                          
+                          alert(loginResult.error || 'Login failed');
+                          setLoading(false);
+                          return;
+                      }
+
+
+                      // setting existing user into auth store 
+
+                      await useAuthStore.getState().setUser(loginResult.user);
+
+                      alert('Login successful! Welcome Back');
+
+                   }
+
+
+    // further navigation is done by app navigator that , it goes to user or business tabs according to who he is actually 
+
+
+
+
+        } catch(error) {
+            console.error('OTP verification error:', error);
+             alert('Error occurred. Please try again.');           
+        }  
+          finally {
+             setLoading(false);
+          }
+
      };
 
 
-   //  resending  the otp function to do again
 
 
-     const handleResendOtp = () => {
+
+   //  resending  the otp function to get new otp again 
+
+
+     const handleResendOtp = async () => {
 
          if(!canResend) return;
 
-         setOtp(['' , '' , '' , '' , '' , '']);
-         setResendTimer(60);
-         setCanResend(false);
-         inputRefs.current[0]?.focus();
-         
 
-         alert('OTP sent successfully');
+         try {
+             
+             const {AuthService} = await import('@/src/stores/authService');
+
+
+             // requesting new otp 
+             
+             const reqOtp = await AuthService.requestOTP(email);
+
+
+             if(!reqOtp.success){
+                alert(reqOtp.error || 'Failed to resend OTP');
+                return;
+             }
+
+
+            // resending the otp with timers 
+
+            setOtp(['' , '' , '' , '' , '' , '']);
+            setResendTimer(60);
+            setCanResend(false);
+            inputRefs.current[0]?.focus();
+
+
+            alert('New OTP sent successfully!');
+
+         } catch(error) {
+                console.error('Resend OTP error:', error);
+                alert('Failed to resend OTP. Please try again');              
+         }
 
      };
+
+     
 
 
      return (
