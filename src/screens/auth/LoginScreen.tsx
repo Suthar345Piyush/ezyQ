@@ -18,6 +18,13 @@ export default function LoginScreen({ navigation, route }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Safe text change handler
+
+  const handleTextChange = (setter: (value: string) => void) => (value: any) => {
+    const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
+    setter(text);
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
       alert('Please fill all fields');
@@ -25,56 +32,46 @@ export default function LoginScreen({ navigation, route }: Props) {
     }
 
     setLoading(true);
-   
-     try {
+    
+    try {
 
-          // importing auth service dynamically here 
+      
+      const { AuthService } = await import('@/src/stores/authService');
+      
+      // Check if email exists
 
-          const {AuthService} = await import('@/src/stores/authService');
+      const emailExists = await AuthService.checkEmailExists(email);
+      
+      if (!emailExists) {
+        alert('No account found with this email. Please sign up first.');
+        setLoading(false);
+        return;
+      }
 
-        // checking if the email exists or not  
+      // Request OTP
 
-        const emailExists = await AuthService.checkEmailExists(email);
+      const result = await AuthService.requestOTP(email);
+      
+      if (!result.success) {
+        alert(result.error || 'Failed to send OTP');
+        setLoading(false);
+        return;
+      }
 
-        if(!emailExists) {
-           alert('No account found with this email. Please sign up first.');
-           setLoading(false);
-           return;
-        }
+      // Navigate to OTP verification
 
-
-        //requesting the otp 
-
-        const reqOtp = await AuthService.requestOTP(email);
-
-        if(!reqOtp.success) {
-            alert(reqOtp.error || 'Failed to send OTP');
-            setLoading(false);
-            return;
-        }
-
-
-        // then navigate the user to the otp verification screen , when he get otp 
-
-        navigation.navigate('OTPVerification'  , {
-           email , role , isNewUser : false,
-        });
-     }  
-
-       catch(error) {
-
-           console.error('Login error:' , error);
-           alert('An error occurred. Please try again')
-       } 
-        
-       finally {
-           setLoading(false);
-       }
-
+      navigation.navigate('OTPVerification', {
+        email,
+        role,
+        isNewUser: false,
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
-
-
- 
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -133,7 +130,6 @@ export default function LoginScreen({ navigation, route }: Props) {
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
                   {isUser ? 'Email' : 'Business Email'}
                 </Text>
-
                 <XStack
                   bg="$gray2"
                   br="$4"
@@ -149,7 +145,7 @@ export default function LoginScreen({ navigation, route }: Props) {
                     flex={1}
                     placeholder={`Enter your ${isUser ? 'email' : 'business email'}`}
                     value={email}
-                    onChangeText={(e) => setEmail(e.nativeEvent.text)}
+                    onChangeText={handleTextChange(setEmail)}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     size="$5"
@@ -180,7 +176,7 @@ export default function LoginScreen({ navigation, route }: Props) {
                     flex={1}
                     placeholder="Enter your password"
                     value={password}
-                    onChangeText={(e) => setPassword(e.nativeEvent.text)}
+                    onChangeText={handleTextChange(setPassword)}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     size="$5"
@@ -215,7 +211,6 @@ export default function LoginScreen({ navigation, route }: Props) {
                 </Button>
               </XStack>
 
-
               {/* Login Button */}
 
               <Button
@@ -242,8 +237,6 @@ export default function LoginScreen({ navigation, route }: Props) {
               </Button>
             </YStack>
 
-
-
             {/* Divider */}
 
             <XStack ai="center" my="$6" gap="$4">
@@ -254,9 +247,8 @@ export default function LoginScreen({ navigation, route }: Props) {
               <Separator flex={1} />
             </XStack>
 
-
             {/* Sign Up Link */}
-
+            
             <XStack jc="center" gap="$2">
               <Text fontSize="$4" color="$gray11">
                 Don't have an account?

@@ -30,9 +30,17 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Safe text change handlers
+
+
+  const handleTextChange = (setter: (value: string) => void) => (value: any) => {
+    const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
+    setter(text);
+  };
+
   const handleRegister = async () => {
 
-    // Validation
+    // initial Validation
 
     if (isUser) {
       if (!fullName || !email || !password) {
@@ -57,60 +65,54 @@ export default function RegisterScreen({ navigation, route }: Props) {
     }
 
     setLoading(true);
-       
-    // soon will using resend email api to send emails to user
-
+    
     try {
-        // auth service 
-        
-        const {AuthService} = await import('@/src/stores/authService');
 
-        const emailToCheck = isUser ? email : businessEmail;
+   
+      const { AuthService } = await import('@/src/stores/authService');
+      
+      const emailToCheck = isUser ? email : businessEmail;
+      
 
-        //checking email exist or not  
+      // Check if email already exists
 
-        const emailExists = await AuthService.checkEmailExists(emailToCheck);
+      const emailExists = await AuthService.checkEmailExists(emailToCheck);
+      
+      if (emailExists) {
+        alert('An account with this email already exists. Please login instead.');
+        setLoading(false);
+        return;
+      }
+
+      // Request OTP for email verification
 
 
-        if(emailExists) {
-           alert('Account with this email already exists. Please login.');
-           setLoading(false);
-           return;
-        }
-
-      //requesting the otp for next verification 
-
-      const reqOtp = await AuthService.requestOTP(emailToCheck);
-
-      if(!reqOtp.success) {
-         alert(reqOtp.error || 'Failed to sent OTP');
-         setLoading(false);
-         return;
+      const result = await AuthService.requestOTP(emailToCheck);
+      
+      if (!result.success) {
+        alert(result.error || 'Failed to send OTP');
+        setLoading(false);
+        return;
       }
 
 
-      // then navigate it to otp screen , in this registering the user/business (it's first time for it )
 
-      navigation.navigate('OTPVerification' , {
-          email : emailToCheck,
-          role,
-          isNewUser : true,
-          name : isUser ? fullName : businessName,
+      // Navigate to OTP verification
+
+
+      navigation.navigate('OTPVerification', {
+        email: emailToCheck,
+        role,
+        isNewUser: true,
+        name: isUser ? fullName : businessName,
       });
-
-
-    } catch(error) {
-         console.error('Registration error:' , error);
-         alert('An error occurred. Please try again.'); 
-    }  
-       finally {
-          setLoading(false);
-       }
-       
-       
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
-
-
 
 
 
@@ -122,7 +124,9 @@ export default function RegisterScreen({ navigation, route }: Props) {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
 
-          {/* Header of the screen*/}
+
+          {/* Header */}
+
 
           <XStack px="$6" py="$4" ai="center">
             <Button
@@ -135,6 +139,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
           </XStack>
 
           <YStack px="$6" pt="$4" pb="$8">
+
 
             {/* Title Section */}
 
@@ -162,13 +167,14 @@ export default function RegisterScreen({ navigation, route }: Props) {
               </Text>
             </YStack>
 
-            {/*  Form content */}
+
+
+            {/* Form */}
 
 
             <YStack gap="$4">
 
-
-              {/* user: full name /business: Business Name */}
+              {/* User: Full Name / Business: Business Name */}
 
 
               <YStack gap="$2">
@@ -194,7 +200,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                     flex={1}
                     placeholder={`Enter your ${isUser ? 'full name' : 'business name'}`}
                     value={isUser ? fullName : businessName}
-                    onChangeText={isUser ? ((e) => setFullName(e.nativeEvent.text)) : ((e) => setBusinessName(e.nativeEvent.text))}
+                    onChangeText={handleTextChange(isUser ? setFullName : setBusinessName)}
                     size="$5"
                     ml="$3"
                     placeholderTextColor="$gray10"
@@ -203,7 +209,9 @@ export default function RegisterScreen({ navigation, route }: Props) {
               </YStack>
 
 
-              {/* email input */}
+
+              {/* Email Input */}
+
 
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
@@ -224,7 +232,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                     flex={1}
                     placeholder={`Enter your ${isUser ? 'email' : 'business email'}`}
                     value={isUser ? email : businessEmail}
-                    onChangeText={isUser ? ((e) => setEmail(e.nativeEvent.text)) : ((e) => setBusinessEmail(e.nativeEvent.text))}
+                    onChangeText={handleTextChange(isUser ? setEmail : setBusinessEmail)}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     size="$5"
@@ -236,7 +244,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
 
 
-              {/* password input */}
+              {/* Password Input */}
 
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
@@ -257,7 +265,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                     flex={1}
                     placeholder="Create a password (min. 6 characters)"
                     value={password}
-                    onChangeText={((e) => setPassword(e.nativeEvent.text))}
+                    onChangeText={handleTextChange(setPassword)}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     size="$5"
@@ -283,7 +291,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
 
 
-              {/* Terms and Conditions sections checkbox */}
+              {/* Terms and Conditions */}
 
               <XStack ai="center" gap="$3" mt="$2">
                 <Checkbox
@@ -294,12 +302,10 @@ export default function RegisterScreen({ navigation, route }: Props) {
                   borderWidth={2}
                   borderColor="$gray8"
                 >
-
                   <Checkbox.Indicator>
-                    <Ionicons name="checkmark" size={16} color={isUser ? '$blue' : '$green'} />
+                    <Ionicons name="checkmark" size={16} color="white" />
                   </Checkbox.Indicator>
                 </Checkbox>
-
                 <XStack f={1} flexWrap="wrap" ai="center">
                   <Text fontSize="$3" color="$gray11">
                     I agree to the{' '}
@@ -317,7 +323,10 @@ export default function RegisterScreen({ navigation, route }: Props) {
               </XStack>
 
 
-              {/* register Button */}
+
+
+              {/* Register Button */}
+
 
               <Button
                 size="$6"
@@ -345,7 +354,8 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
 
 
-            {/* divider using separator */}
+            {/* Divider using separator */}
+
 
             <XStack ai="center" my="$6" gap="$4">
               <Separator flex={1} />
@@ -355,7 +365,10 @@ export default function RegisterScreen({ navigation, route }: Props) {
               <Separator flex={1} />
             </XStack>
 
-            {/* login link to login page  */}
+
+
+            {/* login directed link */}
+
 
             <XStack jc="center" gap="$2">
               <Text fontSize="$4" color="$gray11">
