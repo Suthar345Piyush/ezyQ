@@ -1,184 +1,37 @@
-// auth store code 
+// authentication store complete code
 
-import {create} from 'zustand';
-import * as SecureStore from 'expo-secure-store';
-import { User } from '../types';
+import {create} from "zustand";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { User } from "../types";
+import {UserRepository} from '@/src/services/database/repositories/UserRepository';
+import {AuthService} from '@/src/stores/authService';
 
+const AUTH_STORAGE_KEY = '@ezyq_auth';
+const USER_STORAGE_KEY = '@ezyq_user';
 
-interface AuthState {
+interface AuthState { 
    user : User | null;
    isAuthenticated : boolean;
    isLoading : boolean;
+   authToken : string | null;
 
-   // some actions 
+   // actions that going to happen 
 
-   setUser : (user : User | null) => void;
-   login : (user : User , token:string) => Promise<void>;
+   initialize : () => Promise<void>;
+
+   login : (email : string , password : string) => Promise<{success : boolean  , error?: string}>;
+
+   register : (email : string , name : string , role : 'user' | 'business' , phone?: string)  => Promise<{success : boolean , error?: string}>;
+
    logout : () => Promise<void>;
-   updateUser : (updates : Partial<User>) => void;
-   initialize: () => Promise<void>;
-}
 
+   setUser : (user : User) => Promise<void>;
 
-const TOKEN_KEY = 'auth_token';
-const USER_KEY = 'auth_user';
+   updateUser : (updates : Partial<User>) => Promise<void>;
 
+   clearAuth : () => Promise<void>
 
-export const useAuthStore = create<AuthState>(( set , get) => ({
-
-    //initial state 
-
-     user : null,
-     isAuthenticated : false,
-     isLoading : true,
-
-
-     //setting user 
-
-    setUser : (user) => set({
-      user,
-      isAuthenticated : !!user
-    }),
-  
-  // login code 
-  
-    login : async(user , token) => {
-
-         try{
-          console.log('🔐 Logging in user:', user.email);
-
-              //saving token securely 
-              
-              await SecureStore.setItemAsync(TOKEN_KEY , token);
-
-            // saving user data 
-
-            await SecureStore.setItemAsync(USER_KEY , JSON.stringify(user));
-
-            set({
-              user,
-              isAuthenticated : true,
-              isLoading : false,
-            });
-
-            console.log('✅ User logged in successfully');
-         }
-         
-         catch(error) {
-           console.error('Login error:' , error);
-           throw error;
-         }
-    },
-
-
-     // logout code 
-
-     logout : async () => {
-         try {
-
-          console.log('🚪 Logging out...');
-
-           await SecureStore.deleteItemAsync(TOKEN_KEY);
-           await SecureStore.deleteItemAsync(USER_KEY);
-
-
-           set({
-              user : null,
-              isAuthenticated : false,
-              isLoading : false
-           });
-
-           console.log('✅ User logged out');
-
-         } catch(error) {
-           console.error('Logout error:' , error);
-           throw error;
-         }
-     },
-
-
-     //updating the user data 
-     updateUser : (updates) => {
-
-        const currentUser = get().user;
-
-        if(!currentUser) return;
-
-        const updatedUser = {...currentUser , ...updates};
-
-        //saving to secure store 
-
-        SecureStore.setItemAsync(USER_KEY , JSON.stringify(updatedUser)).catch(console.error);
-
-
-        //update state 
-
-        set({user : updatedUser});
-
-     },
-
-
-     //initializing auth (restoring session on app start)
-
-     initialize : async () => {
-
-        try {
-
-          console.log('🔄 Initializing auth...');
-           set({isLoading : true});
-
-           const token = await SecureStore.getItemAsync(TOKEN_KEY);
-
-           const userStr = await SecureStore.getItemAsync(USER_KEY);
-
-           if(token && userStr) {
-             
-             const user = JSON.parse(userStr) as User;
-
-             console.log('✅ Session restored for:', user.email);
-
-             set({
-               user,
-               isAuthenticated : true,
-               isLoading : false,
-             });
-           } else {
-             console.log('No saved session found');
-              set({
-                 user : null,
-                 isAuthenticated : false,
-                 isLoading : false,
-              });
-           }
-        }  catch(error) {
-
-           console.error('Auth initialization error:' , error);
-           
-           set({
-             user : null,
-             isAuthenticated : false,
-             isLoading : false,
-           });
-        }
-     }
-}));
-
-
-//function to get auth token 
-
-export const getAuthToken = async () : Promise<string | null>  => {
-   try {
-     return await SecureStore.getItemAsync(TOKEN_KEY);
-   } catch(error) {
-     console.error('Get token error:' , error);
-
-     return null;
-   }
-}
-
-
-
-
+};
 
 
 
