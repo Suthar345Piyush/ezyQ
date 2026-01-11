@@ -20,11 +20,7 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
   
   const inputRefs = useRef<any[]>([]);
 
-
-
   // Timer for resend OTP
-
-
   useEffect(() => {
     if (resendTimer > 0) {
       const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
@@ -35,15 +31,10 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
   }, [resendTimer]);
 
   const handleOtpChange = (value: string | any, index: number) => {
-
     // Extract string value if it's an event object
-
-
     const textValue = typeof value === 'string' ? value : value?.nativeEvent?.text || '';
     
     // Only allow single digits
-
-
     if (textValue.length > 1) return;
     if (textValue && isNaN(Number(textValue))) return;
 
@@ -52,8 +43,6 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
     setOtp(newOtp);
 
     // Auto focus next input
-
-
     if (textValue && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -76,14 +65,11 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
     setLoading(true);
     
     try {
-
       // Import services dynamically
-
       const { AuthService } = await import('@/src/stores/authService');
-      const { useAuthStore } = await import('@/src/stores/authStore');
+      const { useAuthStore } = await import('../../stores/authStore');
       
       // Verify OTP
-
       const verifyResult = await AuthService.verifyOTP(email, otpCode);
       
       if (!verifyResult.success) {
@@ -93,7 +79,6 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
       }
 
       // If new user, register them
-
       if (isNewUser) {
         const registerResult = await AuthService.register(
           email,
@@ -108,14 +93,11 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
         }
 
         // Set user in auth store
-
         await useAuthStore.getState().setUser(registerResult.user);
         
         alert('Registration successful! Welcome to EzyQ');
       } else {
-
         // Existing user - login
-
         const loginResult = await AuthService.login(email);
         
         if (!loginResult.success || !loginResult.user) {
@@ -125,18 +107,13 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
         }
 
         // Set user in auth store
-
         await useAuthStore.getState().setUser(loginResult.user);
         
         alert('Login successful! Welcome back');
       }
 
-
-
       // Navigation will be handled automatically by AppNavigator
       // based on isAuthenticated state
-
-
     } catch (error) {
       console.error('OTP verification error:', error);
       alert('An error occurred. Please try again.');
@@ -149,12 +126,10 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
     if (!canResend) return;
     
     try {
-     
+      // Import AuthService dynamically
       const { AuthService } = await import('@/src/stores/authService');
       
       // Request new OTP
-
-
       const result = await AuthService.requestOTP(email);
       
       if (!result.success) {
@@ -163,8 +138,6 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
       }
 
       // Reset OTP inputs and timer
-
-
       setOtp(['', '', '', '', '', '']);
       setResendTimer(60);
       setCanResend(false);
@@ -192,10 +165,7 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
         </XStack>
 
         <YStack px="$6" pt="$4" pb="$8" ai="center">
-
           {/* Icon */}
-
-
           <YStack mb="$8">
             <Circle
               size={120}
@@ -219,8 +189,6 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
           </YStack>
 
           {/* Title Section */}
-
-
           <YStack mb="$8" ai="center">
             <Text fontSize="$10" fontWeight="800" color="$gray12" mb="$2" ta="center">
               Verify Your Email
@@ -234,33 +202,41 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
           </YStack>
 
           {/* OTP Input */}
-
           <YStack mb="$6" w="100%" px="$4">
             <Text fontSize="$4" fontWeight="600" color="$gray12" mb="$4" ta="center">
               Enter OTP Code
             </Text>
-            <XStack jc="space-between" gap="$1" maxWidth={270} ml='$-4'>
+            <XStack jc="center" gap="$3" flexWrap="nowrap">
               {otp.map((digit, index) => (
-                <YStack key={index} flex={1} maxWidth={50} aspectRatio={1}>
+                <YStack 
+                  key={index} 
+                  w={48} 
+                  h={56}
+                  bg="$gray2"
+                  br="$4"
+                  bw={2}
+                  bc={digit ? (isUser ? '$blue8' : '$green8') : '$gray5'}
+                  ai="center"
+                  jc="center"
+                >
                   <Input
-                    ref={(ref: any) => (inputRefs.current[index] = ref)}
+                    ref={(ref : any) => (inputRefs.current[index] = ref)}
                     value={digit}
                     onChangeText={(value) => handleOtpChange(value, index)}
                     onKeyPress={(e) => handleKeyPress(e, index)}
                     maxLength={1}
                     keyboardType="number-pad"
-                    textAlign="center"
-                    size="$7"
+                    unstyled
                     w="100%"
                     h="100%"
-                    br="$4"
-                    bg="$gray2"
-                    bw={2}
-                    bc={digit ? (isUser ? '$blue8' : '$green8') : '$gray5'}
-                    color="$gray12"
-                    focusStyle={{
-                      bc: isUser ? '$blue10' : '$green10',
-                      bg: 'white',
+                    textAlign="center"
+                    size="$8"
+                    color="#1f2937"
+                    style={{
+                      textAlign: 'center',
+                      fontSize: 24,
+                      fontWeight: 'bold',
+                      color: '#1f2937',
                     }}
                   />
                 </YStack>
@@ -269,7 +245,6 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
           </YStack>
 
           {/* Resend Section */}
-
           <XStack ai="center" gap="$2" mb="$8">
             <Text fontSize="$3" color="$gray11">
               Didn't receive code?
@@ -296,7 +271,6 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
           </XStack>
 
           {/* Verify Button */}
-
           <YStack w="100%">
             <Button
               size="$6"
