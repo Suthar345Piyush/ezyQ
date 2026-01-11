@@ -239,7 +239,7 @@ export default function OTPVerificationScreen({ navigation, route }: Props) {
             <Text fontSize="$4" fontWeight="600" color="$gray12" mb="$4" ta="center">
               Enter OTP Code
             </Text>
-            <XStack jc="space-evenly" gap="$1" maxWidth={270} ml='$-4'>
+            <XStack jc="space-between" gap="$1" maxWidth={270} ml='$-4'>
               {otp.map((digit, index) => (
                 <YStack key={index} flex={1} maxWidth={50} aspectRatio={1}>
                   <Input
