@@ -1,6 +1,6 @@
 // Login Screen for both User and Business
 
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +17,71 @@ export default function LoginScreen({ navigation, route }: Props) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading , setGoogleLoading] = useState(false);
+ 
+
+    // google authentication hook 
+
+  let request = null;
+  let response = null;
+  let promptAsync = null;
+
+
+  try {
+     const GoogleAuthService = require("@/src/services/auth/googleAuth.service").GoogleAuthService;
+
+     const googleAuth = GoogleAuthService.useGoogleAuth();
+
+     request = googleAuth[0];
+     response = googleAuth[1];
+     promptAsync = googleAuth[2];
+  } 
+  
+    catch(error) {
+      console.error("Failed to initialize Google Auth:" , error); 
+  }
+
+
+    // handling the google auth response 
+
+    useEffect(() => {
+        if(response) {
+           handleGoogleResponse();
+        }
+    } , [response]);
+
+
+    const handleGoogleResponse = async () => {
+         
+           if(!response) return;
+
+
+           setGoogleLoading(true);
+
+
+           try {
+             const {GoogleAuthService} = await import("@/src/services/auth/googleAuth.service");
+
+             const result = await GoogleAuthService.handleGoogleSignIn(response , role);
+
+
+
+              if(result.success && result.user) {
+                  console.log("Google login successful");
+              } else {
+                  alert(result.error || 'Google sign-in failed');
+              }
+           } 
+           
+            catch (error) {
+              console.error('Google sign-in error:' , error);
+              alert('An error occurred during Google sign-in');
+           } finally  {
+              setGoogleLoading(false);
+           }
+    };
+ 
+
 
   // Safe text change handler
 
@@ -72,6 +137,32 @@ export default function LoginScreen({ navigation, route }: Props) {
       setLoading(false);
     }
   };
+
+  
+
+  
+  const handleGoogleSignIn = async () => {
+        if(!promptAsync) {
+           alert('Google sign-in is not available. Please check your configuration.');
+           return;
+        }
+
+
+        setGoogleLoading(true);
+
+
+        try {
+           await promptAsync();
+
+
+        } catch(error) {
+           console.error('Google sign-in error:' , error);
+           alert('Google sign-in failed. Please try agaian');
+           setGoogleLoading(false);
+        }
+  };
+
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -240,12 +331,30 @@ export default function LoginScreen({ navigation, route }: Props) {
             {/* Divider */}
 
             <XStack ai="center" my="$6" gap="$4">
-              <Separator flex={1} />
-              <Text fontSize="$3" color="$gray10">
-                OR
-              </Text>
-              <Separator flex={1} />
+                <Separator flex={1} />
+                   <Text fontSize="$3" color="$gray10">
+                      OR
+                   </Text>
+                <Separator flex={1} />
             </XStack>
+
+
+
+            {/* google sign-in button  */}
+
+             <Button size="$6" br="$4" bg='white' bw={2} bc="$gray6" onPress={handleGoogleSignIn} pressStyle={{scale : 0.98 , bg : '$gray2'}} disabled={googleLoading} mb="$4">
+
+               <XStack ai="center" gap="$3">
+
+                 <YStack w={24} h={24}>
+
+                  <Ionicons name="logo-google" size={24} color="#DB4437"/>
+                 </YStack>
+
+                 <Text color="$gray12" fontSize="$5" fontWeight="600">{googleLoading ? 'Signing-in...' : 'Continue with Google'}</Text>
+               </XStack>
+             </Button>
+
 
             {/* Sign Up Link */}
             
@@ -262,6 +371,7 @@ export default function LoginScreen({ navigation, route }: Props) {
                   fontSize="$4"
                   color={isUser ? '$blue10' : '$green10'}
                   fontWeight="bold"
+                  
                 >
                   Sign Up
                 </Text>

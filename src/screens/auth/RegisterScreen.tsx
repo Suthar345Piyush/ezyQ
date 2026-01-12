@@ -1,6 +1,6 @@
 // Register Screen for both User and Business
 
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,15 +29,79 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading , setGoogleLoading]  = useState(false);
+
+
+
+ // import GoogleAuthService at the top
+
+ let request = null;
+ let response = null;
+ let promptAsync = null;
+
+ // try to use Google Auth hook
+
+ try {
+   const GoogleAuthService = require('@/src/services/auth/googleAuth.service').GoogleAuthService;
+   
+   const googleAuth = GoogleAuthService.useGoogleAuth();
+   request = googleAuth[0];
+   response = googleAuth[1];
+   promptAsync = googleAuth[2];
+ } catch (error) {
+   console.error('Failed to initialize Google Auth:', error);
+ }
+
+
+
+// handling the google auth response 
+
+useEffect(() => {
+    if(response) {
+       handleGoogleResponse();
+    }
+} , [response]);
+
+
+const handleGoogleResponse = async () => {
+     
+       if(!response) return;
+
+
+       setGoogleLoading(true);
+
+
+       try {
+         const {GoogleAuthService} = await import("@/src/services/auth/googleAuth.service");
+
+         const result = await GoogleAuthService.handleGoogleSignIn(response , role);
+
+
+
+          if(result.success && result.user) {
+              console.log("Google login successful");
+          } else {
+              alert(result.error || 'Google sign-in failed');
+          }
+       } 
+       
+        catch (error) {
+          console.error('Google sign-in error:' , error);
+          alert('An error occurred during Google sign-in');
+       } finally  {
+          setGoogleLoading(false);
+       }
+};
+
+
 
   // Safe text change handlers
-
 
   const handleTextChange = (setter: (value: string) => void) => (value: any) => {
     const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
     setter(text);
   };
-
+ 
   const handleRegister = async () => {
 
     // initial Validation
@@ -113,6 +177,33 @@ export default function RegisterScreen({ navigation, route }: Props) {
       setLoading(false);
     }
   };
+
+
+   // google login handle function 
+
+   const handleGoogleSignUp = async () => {
+       if(!agreeToTerms) {
+         alert('Please agree to terms and conditions');
+         return;
+       }
+
+
+       if(!promptAsync) {
+         alert('Google Sign-Up is not available. Please check your config.');
+         return;
+       }
+
+       setGoogleLoading(true);
+
+
+       try {
+         await promptAsync();
+       } catch(error) {
+         console.error('Google sign-up error:' , error);
+         alert('Google sign-up failed. Please try again');
+         setGoogleLoading(false);
+       }
+   };
 
 
 
@@ -365,6 +456,26 @@ export default function RegisterScreen({ navigation, route }: Props) {
               <Separator flex={1} />
             </XStack>
 
+
+            {/* google sign up button  */}
+
+
+            <Button size="$6" br="$4" bg="white" bw={2} bc="$gray6" onPress={handleGoogleSignUp} pressStyle={{
+              scale : 0.98 , bg : '$gray2'
+            }}  disabled={googleLoading || !agreeToTerms} opacity={!agreeToTerms ? 0.5 : 1} mb="$4">
+
+
+              <YStack ai="center" gap="$3">
+
+                 <YStack w={24} h={24}>
+                  <Ionicons name="logo-google" size={24} color="#DB4437"/>
+                 </YStack> 
+
+                 <Text color="$gray12" fontSize="$5" fontWeight="600">
+                   {googleLoading ? 'Signing-up...' : 'Sign up with google'}
+                 </Text>
+               </YStack>
+            </Button>
 
 
             {/* login directed link */}
