@@ -35,8 +35,6 @@ export interface GoogleAuthResult {
 };
 
 
-
-
 export class GoogleAuthService {
        
 
