@@ -1,11 +1,10 @@
-// Register Screen for both User and Business
-
-import { useState , useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { YStack, XStack, Text, Button, Input, Separator, Checkbox } from 'tamagui';
 import { AuthStackScreenProps } from '../../types/navigation.types';
+import { GoogleAuthService } from '@/src/services/auth/googleAuth.service';
 
 type Props = AuthStackScreenProps<'Register'>;
 
@@ -13,99 +12,54 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const { role } = route.params;
   const isUser = role === 'user';
 
-  // User fields
-
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  // Business fields
-
   const [businessName, setBusinessName] = useState('');
   const [businessEmail, setBusinessEmail] = useState('');
-  
-  // Common
-
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading , setGoogleLoading]  = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
+  //  calling  hook at top level unconditionally
 
+  
+  const { request, response, promptAsync } = GoogleAuthService.useGoogleAuth();
 
- // import GoogleAuthService at the top
-
- let request = null;
- let response = null;
- let promptAsync = null;
-
- // try to use Google Auth hook
-
- try {
-   const GoogleAuthService =  import('@/src/services/auth/googleAuth.service').GoogleAuthService;
-   
-   const googleAuth = GoogleAuthService.useGoogleAuth();
-   request = googleAuth[0];
-   response = googleAuth[1];
-   promptAsync = googleAuth[2];
- } catch (error) {
-   console.error('Failed to initialize Google Auth:', error);
- }
-
-
-
-// handling the google auth response 
-
-useEffect(() => {
-    if(response) {
-       handleGoogleResponse();
+  useEffect(() => {
+    if (response) {
+      handleGoogleResponse();
     }
-} , [response]);
+  }, [response]);
 
+  const handleGoogleResponse = async () => {
+    if (!response) return;
 
-const handleGoogleResponse = async () => {
-     
-       if(!response) return;
+    setGoogleLoading(true);
 
+    try {
+      const result = await GoogleAuthService.handleGoogleSignIn(response, role);
 
-       setGoogleLoading(true);
-
-
-       try {
-         const {GoogleAuthService} = await import("@/src/services/auth/googleAuth.service");
-
-         const result = await GoogleAuthService.handleGoogleSignIn(response , role);
-
-
-
-          if(result.success && result.user) {
-              console.log("Google login successful");
-          } else {
-              alert(result.error || 'Google sign-in failed');
-          }
-       } 
-       
-        catch (error) {
-          console.error('Google sign-in error:' , error);
-          alert('An error occurred during Google sign-in');
-       } finally  {
-          setGoogleLoading(false);
-       }
-};
-
-
-
-  // Safe text change handlers
+      if (result.success && result.user) {
+        console.log('Google sign-up successful');
+      } else {
+        alert(result.error || 'Google sign-up failed');
+      }
+    } catch (error) {
+      console.error('Google sign-up error:', error);
+      alert('An error occurred during Google sign-up');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const handleTextChange = (setter: (value: string) => void) => (value: any) => {
     const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
     setter(text);
   };
- 
+
   const handleRegister = async () => {
-
-    // initial Validation
-
     if (isUser) {
       if (!fullName || !email || !password) {
         alert('Please fill all fields');
@@ -129,40 +83,27 @@ const handleGoogleResponse = async () => {
     }
 
     setLoading(true);
-    
+
     try {
-
-   
       const { AuthService } = await import('@/src/stores/authService');
-      
-      const emailToCheck = isUser ? email : businessEmail;
-      
 
-      // Check if email already exists
+      const emailToCheck = isUser ? email : businessEmail;
 
       const emailExists = await AuthService.checkEmailExists(emailToCheck);
-      
+
       if (emailExists) {
         alert('An account with this email already exists. Please login instead.');
         setLoading(false);
         return;
       }
 
-      // Request OTP for email verification
-
-
       const result = await AuthService.requestOTP(emailToCheck);
-      
+
       if (!result.success) {
         alert(result.error || 'Failed to send OTP');
         setLoading(false);
         return;
       }
-
-
-
-      // Navigate to OTP verification
-
 
       navigation.navigate('OTPVerification', {
         email: emailToCheck,
@@ -178,34 +119,27 @@ const handleGoogleResponse = async () => {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    if (!agreeToTerms) {
+      alert('Please agree to terms and conditions');
+      return;
+    }
 
-   // google login handle function 
+    if (!promptAsync) {
+      alert('Google sign-up is not available. Please check your configuration.');
+      return;
+    }
 
-   const handleGoogleSignUp = async () => {
-       if(!agreeToTerms) {
-         alert('Please agree to terms and conditions');
-         return;
-       }
+    setGoogleLoading(true);
 
-
-       if(!promptAsync) {
-         alert('Google Sign-Up is not available. Please check your config.');
-         return;
-       }
-
-       setGoogleLoading(true);
-
-
-       try {
-         await promptAsync();
-       } catch(error) {
-         console.error('Google sign-up error:' , error);
-         alert('Google sign-up failed. Please try again');
-         setGoogleLoading(false);
-       }
-   };
-
-
+    try {
+      await promptAsync();
+    } catch (error) {
+      console.error('Google sign-up error:', error);
+      alert('Google sign-up failed. Please try again');
+      setGoogleLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -214,11 +148,6 @@ const handleGoogleResponse = async () => {
         style={{ flex: 1 }}
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-
-
-          {/* Header */}
-
-
           <XStack px="$6" py="$4" ai="center">
             <Button
               unstyled
@@ -230,11 +159,6 @@ const handleGoogleResponse = async () => {
           </XStack>
 
           <YStack px="$6" pt="$4" pb="$8">
-
-
-            {/* Title Section */}
-
-
             <YStack mb="$8">
               <YStack
                 bg={isUser ? '$blue2' : '$green2'}
@@ -258,16 +182,7 @@ const handleGoogleResponse = async () => {
               </Text>
             </YStack>
 
-
-
-            {/* Form */}
-
-
             <YStack gap="$4">
-
-              {/* User: Full Name / Business: Business Name */}
-
-
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
                   {isUser ? 'Full Name' : 'Business Name'}
@@ -299,11 +214,6 @@ const handleGoogleResponse = async () => {
                 </XStack>
               </YStack>
 
-
-
-              {/* Email Input */}
-
-
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
                   {isUser ? 'Email' : 'Business Email'}
@@ -332,10 +242,6 @@ const handleGoogleResponse = async () => {
                   />
                 </XStack>
               </YStack>
-
-
-
-              {/* Password Input */}
 
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
@@ -380,10 +286,6 @@ const handleGoogleResponse = async () => {
                 </Text>
               </YStack>
 
-
-
-              {/* Terms and Conditions */}
-
               <XStack ai="center" gap="$3" mt="$2">
                 <Checkbox
                   id="terms"
@@ -413,12 +315,6 @@ const handleGoogleResponse = async () => {
                 </XStack>
               </XStack>
 
-
-
-
-              {/* Register Button */}
-
-
               <Button
                 size="$6"
                 br="$4"
@@ -443,11 +339,6 @@ const handleGoogleResponse = async () => {
               </Button>
             </YStack>
 
-
-
-            {/* Divider using separator */}
-
-
             <XStack ai="center" my="$6" gap="$4">
               <Separator flex={1} />
               <Text fontSize="$3" color="$gray10">
@@ -456,30 +347,25 @@ const handleGoogleResponse = async () => {
               <Separator flex={1} />
             </XStack>
 
-
-            {/* google sign up button  */}
-
-
-            <Button size="$6" br="$4" bg="white" bw={2} bc="$gray6" onPress={handleGoogleSignUp} pressStyle={{
-              scale : 0.98 , bg : '$gray2'
-            }}  disabled={googleLoading || !agreeToTerms} opacity={!agreeToTerms ? 0.5 : 1} mb="$4">
-
-
-              <YStack ai="center" gap="$3">
-
-                 <YStack w={24} h={24}>
-                  <Ionicons name="logo-google" size={24} color="#DB4437"/>
-                 </YStack> 
-
-                 <Text color="$gray12" fontSize="$5" fontWeight="600">
-                   {googleLoading ? 'Signing-up...' : 'Sign up with google'}
-                 </Text>
-               </YStack>
+            <Button
+              size="$6"
+              br="$4"
+              bg="white"
+              bw={2}
+              bc="$gray6"
+              onPress={handleGoogleSignUp}
+              pressStyle={{ scale: 0.98, bg: '$gray2' }}
+              disabled={googleLoading || !agreeToTerms}
+              opacity={!agreeToTerms ? 0.5 : 1}
+              mb="$4"
+            >
+              <XStack ai="center" gap="$3">
+                <Ionicons name="logo-google" size={24} color="#DB4437" />
+                <Text color="$gray12" fontSize="$5" fontWeight="600">
+                  {googleLoading ? 'Signing up...' : 'Sign up with Google'}
+                </Text>
+              </XStack>
             </Button>
-
-
-            {/* login directed link */}
-
 
             <XStack jc="center" gap="$2">
               <Text fontSize="$4" color="$gray11">

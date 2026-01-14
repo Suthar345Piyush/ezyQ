@@ -1,11 +1,10 @@
-// Login Screen for both User and Business
-
-import { useState , useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { YStack, XStack, Text, Button, Input, Separator } from 'tamagui';
 import { AuthStackScreenProps } from '../../types/navigation.types';
+import { GoogleAuthService } from '@/src/services/auth/googleAuth.service';
 
 type Props = AuthStackScreenProps<'Login'>;
 
@@ -17,73 +16,43 @@ export default function LoginScreen({ navigation, route }: Props) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading , setGoogleLoading] = useState(false);
- 
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-    // google authentication hook 
+  // ✅ Call hook at top level unconditionally
 
-  let request = null;
-  let response = null;
-  let promptAsync = null;
+  const { request, response, promptAsync } = GoogleAuthService.useGoogleAuth();
 
+  // Handle Google auth response
+  useEffect(() => {
+    if (response) {
+      handleGoogleResponse();
+    }
+  }, [response]);
 
-  try {
-     const GoogleAuthService = require("@/src/services/auth/googleAuth.service").GoogleAuthService;
+  const handleGoogleResponse = async () => {
+    if (!response) return;
 
-     const googleAuth = GoogleAuthService.useGoogleAuth();
+    setGoogleLoading(true);
 
-     request = googleAuth[0];
-     response = googleAuth[1];
-     promptAsync = googleAuth[2];
-  } 
-  
-    catch(error) {
-      console.error("Failed to initialize Google Auth:" , error); 
-  }
+    try {
+      const result = await GoogleAuthService.handleGoogleSignIn(response, role);
 
+      if (result.success && result.user) {
+        console.log('Google login successful');
 
-    // handling the google auth response 
-
-    useEffect(() => {
-        if(response) {
-           handleGoogleResponse();
-        }
-    } , [response]);
+        // Navigation should happen automatically via auth state
 
 
-    const handleGoogleResponse = async () => {
-         
-           if(!response) return;
-
-
-           setGoogleLoading(true);
-
-
-           try {
-             const {GoogleAuthService} = await import("@/src/services/auth/googleAuth.service");
-
-             const result = await GoogleAuthService.handleGoogleSignIn(response , role);
-
-
-
-              if(result.success && result.user) {
-                  console.log("Google login successful");
-              } else {
-                  alert(result.error || 'Google sign-in failed');
-              }
-           } 
-           
-            catch (error) {
-              console.error('Google sign-in error:' , error);
-              alert('An error occurred during Google sign-in');
-           } finally  {
-              setGoogleLoading(false);
-           }
-    };
- 
-
-
-  // Safe text change handler
+      } else {
+        alert(result.error || 'Google sign-in failed');
+      }
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      alert('An error occurred during Google sign-in');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const handleTextChange = (setter: (value: string) => void) => (value: any) => {
     const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
@@ -97,33 +66,25 @@ export default function LoginScreen({ navigation, route }: Props) {
     }
 
     setLoading(true);
-    
-    try {
 
-      
+    try {
       const { AuthService } = await import('@/src/stores/authService');
-      
-      // Check if email exists
 
       const emailExists = await AuthService.checkEmailExists(email);
-      
+
       if (!emailExists) {
         alert('No account found with this email. Please sign up first.');
         setLoading(false);
         return;
       }
 
-      // Request OTP
-
       const result = await AuthService.requestOTP(email);
-      
+
       if (!result.success) {
         alert(result.error || 'Failed to send OTP');
         setLoading(false);
         return;
       }
-
-      // Navigate to OTP verification
 
       navigation.navigate('OTPVerification', {
         email,
@@ -138,31 +99,22 @@ export default function LoginScreen({ navigation, route }: Props) {
     }
   };
 
-  
-
-  
   const handleGoogleSignIn = async () => {
-        if(!promptAsync) {
-           alert('Google sign-in is not available. Please check your configuration.');
-           return;
-        }
+    if (!promptAsync) {
+      alert('Google sign-in is not available. Please check your configuration.');
+      return;
+    }
 
+    setGoogleLoading(true);
 
-        setGoogleLoading(true);
-
-
-        try {
-           await promptAsync();
-
-
-        } catch(error) {
-           console.error('Google sign-in error:' , error);
-           alert('Google sign-in failed. Please try agaian');
-           setGoogleLoading(false);
-        }
+    try {
+      await promptAsync();
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      alert('Google sign-in failed. Please try again');
+      setGoogleLoading(false);
+    }
   };
-
-
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -170,10 +122,8 @@ export default function LoginScreen({ navigation, route }: Props) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
+        
         <ScrollView showsVerticalScrollIndicator={false}>
-
-          {/* Header */}
-
           <XStack px="$6" py="$4" ai="center">
             <Button
               unstyled
@@ -185,9 +135,6 @@ export default function LoginScreen({ navigation, route }: Props) {
           </XStack>
 
           <YStack px="$6" pt="$4" pb="$8">
-
-            {/* Title Section */}
-
             <YStack mb="$8">
               <YStack
                 bg={isUser ? '$blue2' : '$green2'}
@@ -211,12 +158,7 @@ export default function LoginScreen({ navigation, route }: Props) {
               </Text>
             </YStack>
 
-            {/* Form */}
-
             <YStack gap="$4">
-
-              {/* Email Input */}
-
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
                   {isUser ? 'Email' : 'Business Email'}
@@ -245,8 +187,6 @@ export default function LoginScreen({ navigation, route }: Props) {
                   />
                 </XStack>
               </YStack>
-
-              {/* Password Input */}
 
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
@@ -288,8 +228,6 @@ export default function LoginScreen({ navigation, route }: Props) {
                 </XStack>
               </YStack>
 
-              {/* Forgot Password */}
-
               <XStack jc="flex-end">
                 <Button
                   unstyled
@@ -301,8 +239,6 @@ export default function LoginScreen({ navigation, route }: Props) {
                   </Text>
                 </Button>
               </XStack>
-
-              {/* Login Button */}
 
               <Button
                 size="$6"
@@ -328,36 +264,33 @@ export default function LoginScreen({ navigation, route }: Props) {
               </Button>
             </YStack>
 
-            {/* Divider */}
-
             <XStack ai="center" my="$6" gap="$4">
-                <Separator flex={1} />
-                   <Text fontSize="$3" color="$gray10">
-                      OR
-                   </Text>
-                <Separator flex={1} />
+              <Separator flex={1} />
+              <Text fontSize="$3" color="$gray10">
+                OR
+              </Text>
+              <Separator flex={1} />
             </XStack>
 
+            <Button
+              size="$6"
+              br="$4"
+              bg="white"
+              bw={2}
+              bc="$gray6"
+              onPress={handleGoogleSignIn}
+              pressStyle={{ scale: 0.98, bg: '$gray2' }}
+              disabled={googleLoading}
+              mb="$4"
+            >
+              <XStack ai="center" gap="$3">
+                <Ionicons name="logo-google" size={24} color="#DB4437" />
+                <Text color="$gray12" fontSize="$5" fontWeight="600">
+                  {googleLoading ? 'Signing in...' : 'Continue with Google'}
+                </Text>
+              </XStack>
+            </Button>
 
-
-            {/* google sign-in button  */}
-
-             <Button size="$6" br="$4" bg='white' bw={2} bc="$gray6" onPress={handleGoogleSignIn} pressStyle={{scale : 0.98 , bg : '$gray2'}} disabled={googleLoading} mb="$4">
-
-               <XStack ai="center" gap="$3">
-
-                 <YStack w={24} h={24}>
-
-                  <Ionicons name="logo-google" size={24} color="#DB4437"/>
-                 </YStack>
-
-                 <Text color="$gray12" fontSize="$5" fontWeight="600">{googleLoading ? 'Signing-in...' : 'Continue with Google'}</Text>
-               </XStack>
-             </Button>
-
-
-            {/* Sign Up Link */}
-            
             <XStack jc="center" gap="$2">
               <Text fontSize="$4" color="$gray11">
                 Don't have an account?
@@ -371,7 +304,6 @@ export default function LoginScreen({ navigation, route }: Props) {
                   fontSize="$4"
                   color={isUser ? '$blue10' : '$green10'}
                   fontWeight="bold"
-                  
                 >
                   Sign Up
                 </Text>
