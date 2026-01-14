@@ -42,7 +42,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
  // try to use Google Auth hook
 
  try {
-   const GoogleAuthService = require('@/src/services/auth/googleAuth.service').GoogleAuthService;
+   const GoogleAuthService =  import('@/src/services/auth/googleAuth.service').GoogleAuthService;
    
    const googleAuth = GoogleAuthService.useGoogleAuth();
    request = googleAuth[0];

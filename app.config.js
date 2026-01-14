@@ -1,16 +1,85 @@
-// config file  
-
-import 'dotenv/config';
-
 export default {
-   ...require('./app.json'),
+  expo: {
+    "name": "ezyQ",
+    "slug": "ezyQ",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "ezyq",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
 
-   expo :  {
-      ...require('./app.json').expo,
+    ios: {
+      "supportsTablet": true
+    },
 
-      extra : {
-         googleAndroidClientId : process.env.GOOGLE_ANDROID_CLIENT_ID,
+    splash: {
+      "image": "../assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+
+    assetBundlePatterns: ["**/*"],
+
+    android: {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-   }
-};
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "CAMERA"
+      ],
+      "package": "com.piyushsuthar.ezyq"
+    },
 
+    web: {
+      "output": "static",
+      "favicon": "../assets/images/favicon.png",
+      "bundler": "metro"
+    },
+
+    extra : {
+      googleAndroidClientId : process.env.GOOGLE_ANDROID_CLIENT_ID, 
+    },
+
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "../assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true,
+          "android": {
+            "enableFTS": false,
+            "useSQLCipher": false
+          }
+        }
+      ],
+      "expo-secure-store",
+      "@react-native-google-signin/google-signin"
+    ],
+
+
+    experiments: {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
