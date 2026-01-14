@@ -1,50 +1,54 @@
+import 'dotenv/config';
+
 export default {
   expo: {
-    "name": "ezyQ",
-    "slug": "ezyQ",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "ezyq",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    name: "ezyQ",
+    slug: "ezyQ",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/images/icon.png",
+    scheme: "ezyq",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
 
     ios: {
-      "supportsTablet": true
+      supportsTablet: true
     },
 
     splash: {
-      "image": "../assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      image: "./assets/images/splash-icon.png",
+      resizeMode: "contain",
+      backgroundColor: "#ffffff"
     },
 
     assetBundlePatterns: ["**/*"],
 
     android: {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      adaptiveIcon: {
+        backgroundColor: "#E6F4FE",
+        foregroundImage: "./assets/images/android-icon-foreground.png",
+        backgroundImage: "./assets/images/android-icon-background.png",
+        monochromeImage: "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "permissions": [
+      edgeToEdgeEnabled: true,
+      predictiveBackGestureEnabled: false,
+      permissions: [
         "ACCESS_FINE_LOCATION",
         "CAMERA"
       ],
-      "package": "com.piyushsuthar.ezyq"
+      package: "com.piyushsuthar.ezyq"
     },
 
     web: {
-      "output": "static",
-      "favicon": "../assets/images/favicon.png",
-      "bundler": "metro"
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+      bundler: "metro"
     },
 
-    extra : {
-      googleAndroidClientId : process.env.GOOGLE_ANDROID_CLIENT_ID, 
+   
+    extra: {
+      googleAndroidClientId: process.env.GOOGLE_ANDROID_CLIENT_ID, 
+      googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID,
     },
 
     plugins: [
@@ -52,23 +56,23 @@ export default {
       [
         "expo-splash-screen",
         {
-          "image": "../assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
+          image: "./assets/images/splash-icon.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          backgroundColor: "#ffffff",
+          dark: {
+            backgroundColor: "#000000"
           }
         }
       ],
       [
         "expo-sqlite",
         {
-          "enableFTS": true,
-          "useSQLCipher": true,
-          "android": {
-            "enableFTS": false,
-            "useSQLCipher": false
+          enableFTS: true,
+          useSQLCipher: true,
+          android: {
+            enableFTS: false,
+            useSQLCipher: false
           }
         }
       ],
@@ -76,10 +80,9 @@ export default {
       "@react-native-google-signin/google-signin"
     ],
 
-
     experiments: {
-      "typedRoutes": true,
-      "reactCompiler": true
+      typedRoutes: true,
+      reactCompiler: true
     }
   }
-}
+};
