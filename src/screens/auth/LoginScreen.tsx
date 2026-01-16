@@ -1,10 +1,21 @@
+// login screen code 
+
+
 import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { YStack, XStack, Text, Button, Input, Separator } from 'tamagui';
 import { AuthStackScreenProps } from '../../types/navigation.types';
-import { GoogleAuthService } from '@/src/services/auth/googleAuth.service';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import  Constants  from 'expo-constants';
+
+
+
+
+WebBrowser.maybeCompleteAuthSession();
+
 
 type Props = AuthStackScreenProps<'Login'>;
 
@@ -18,42 +29,37 @@ export default function LoginScreen({ navigation, route }: Props) {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  // ✅ Call hook at top level unconditionally
+   
+  // google auth setup 
 
-  const { request, response, promptAsync } = GoogleAuthService.useGoogleAuth();
+  const [request , response , promptAsync] = Google.useAuthRequest({
+      androidClientId : Constants.expoConfig?.extra?.googleAndroidClientId,
+      scopes : ['profile' , 'email'],
+  });
 
-  // Handle Google auth response
+
+
+  //handling the google sign-in response 
+
   useEffect(() => {
-    if (response) {
-      handleGoogleResponse();
-    }
-  }, [response]);
-
-  const handleGoogleResponse = async () => {
-    if (!response) return;
-
-    setGoogleLoading(true);
-
-    try {
-      const result = await GoogleAuthService.handleGoogleSignIn(response, role);
-
-      if (result.success && result.user) {
-        console.log('Google login successful');
-
-        // Navigation should happen automatically via auth state
-
-
-      } else {
-        alert(result.error || 'Google sign-in failed');
+       if(response?.type === 'success') {
+          handleGoogleResponse(response);
+       } 
+      else if(response?.type === 'error') {
+          setGoogleLoading(false);
       }
-    } catch (error) {
-      console.error('Google sign-in error:', error);
-      alert('An error occurred during Google sign-in');
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
 
+    else if(response?.type === 'dismiss' || response?.type === 'cancel') {
+       setGoogleLoading(false);
+    }
+   } , [response]);
+
+
+
+
+   
+   // safe text changing handler function 
+   
   const handleTextChange = (setter: (value: string) => void) => (value: any) => {
     const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
     setter(text);
@@ -99,23 +105,60 @@ export default function LoginScreen({ navigation, route }: Props) {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    if (!promptAsync) {
-      alert('Google sign-in is not available. Please check your configuration.');
-      return;
-    }
 
-    setGoogleLoading(true);
+  // sign in handling function 
 
-    try {
-      await promptAsync();
-    } catch (error) {
-      console.error('Google sign-in error:', error);
-      alert('Google sign-in failed. Please try again');
-      setGoogleLoading(false);
-    }
+  const handleGoogleSignIn = async  () => {
+      setGoogleLoading(true);
+
+
+      try {
+         if(!request) {
+           alert('Google sign-in is not ready yet. Please wait a moment');
+           setGoogleLoading(false);
+           return;
+         }
+
+
+          await promptAsync();
+
+      } 
+        catch(error){
+          console.error('Google sign-in error:' , error);
+          alert('Failed to open Google sign-in. Please try again.');
+          setGoogleLoading(false);
+      }
   };
 
+
+  // handling the google sign-in response 
+
+  const handleGoogleResponse = async (response : any) => {
+
+      setGoogleLoading(true);
+
+      try {
+         const {GoogleAuthService} = await import("@/src/services/auth/googleAuth.service");
+
+
+         const result = GoogleAuthService.handleGoogleSignIn(response , role);
+
+         if((await result).success){
+           console.log('Google sign-in successful!');
+         } else {
+            alert((await result).error || 'Google sign-in failed');
+         }
+      } 
+        catch(error) {
+           console.error('Google response error:' , error);
+           alert('An error occurred during Google sign-in');
+        }  
+        finally {
+           setGoogleLoading(false);
+        }
+  };
+
+ 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <KeyboardAvoidingView
@@ -135,6 +178,9 @@ export default function LoginScreen({ navigation, route }: Props) {
           </XStack>
 
           <YStack px="$6" pt="$4" pb="$8">
+   
+    {/* title section  */}
+
             <YStack mb="$8">
               <YStack
                 bg={isUser ? '$blue2' : '$green2'}
@@ -188,6 +234,8 @@ export default function LoginScreen({ navigation, route }: Props) {
                 </XStack>
               </YStack>
 
+              {/* password input  */}
+
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="600" color="$gray12">
                   Password
@@ -216,7 +264,11 @@ export default function LoginScreen({ navigation, route }: Props) {
                   />
                   <Button
                     unstyled
-                    onPress={() => setShowPassword(!showPassword)}
+                    onPress={() => {
+                       console.log('Password visibility');
+                       setShowPassword(!showPassword);
+                    }}
+                    hitSlop={{top : 10 , bottom : 10 , left : 10 , right : 10}}
                     pressStyle={{ opacity: 0.6 }}
                   >
                     <Ionicons
