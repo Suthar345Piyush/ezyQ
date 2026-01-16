@@ -98,7 +98,6 @@ export class GoogleAuthService {
         }
 
 
-
         // Set user in auth store
 
 
@@ -113,7 +112,6 @@ export class GoogleAuthService {
 
 
         // New user - register
-
 
         const registerResult = await AuthService.register(
           userInfo.email,
