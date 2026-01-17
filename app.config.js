@@ -49,6 +49,7 @@ export default {
     extra: {
       googleAndroidClientId: process.env.GOOGLE_ANDROID_CLIENT_ID, 
       googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID,
+      resendApiKey : process.env.RESEND_API_KEY,
     },
 
     plugins: [

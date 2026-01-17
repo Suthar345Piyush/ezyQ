@@ -4,15 +4,8 @@ import {Resend} from 'resend';
 
 // initializing resend with the api keys 
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 
-
-if(!RESEND_API_KEY) {
-   console.error('Resend api key not found!');   
-};
-
-
-const resend = new Resend(RESEND_API_KEY);
+const resend = new Resend('re_MSihDpHU_MBfE53K3UC8xybDtFeEfHJ39');
 
 
 export class ResendEmailService {
