@@ -81,6 +81,15 @@ export default function HomeScreen({navigation} : Props) {
      };
 
 
+   
+   // helper function for taking safe user input (just for text input)  
+
+     const handleTextChange = (setter: (value: string) => void) => (value: any) => {
+      const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
+      setter(text);
+    };
+
+
     // greeting function 
 
      const getGreeting = () => {
@@ -133,7 +142,7 @@ export default function HomeScreen({navigation} : Props) {
 
                  <Ionicons name="search" size={20} color="#9ca3af"/>
 
-                 <Input unstyled flex={1} placeholder="Search for queues..." value={searchQuery} onChangeText={setSearchQuery} size="$4" ml="$3" placeholderTextColor="$gray10"/> 
+                 <Input unstyled flex={1} placeholder="Search for queues..." value={searchQuery} onChangeText={handleTextChange(setSearchQuery)} size="$4" ml="$3" placeholderTextColor="$gray10"/> 
                </XStack>
 
              </YStack>
