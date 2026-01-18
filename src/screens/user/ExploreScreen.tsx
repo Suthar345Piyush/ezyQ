@@ -106,6 +106,14 @@ export default function ExploreScreen({ navigation} : Props) {
     const [searchQuery , setSearchQuery] = useState('');
 
 
+    //handling text change in all input fields 
+
+    const handleTextChange = (setter : (value : string) => void) => (value : any) => {
+         const text = typeof value === 'string' ? value : (value?.nativeEvent?.text || '');
+         setter(text);
+    };
+
+
     //filtering the queues 
     // matching the category of the selected queue by user 
 
@@ -142,24 +150,63 @@ export default function ExploreScreen({ navigation} : Props) {
     };
 
 
-    
+    return (
+
+       <SafeAreaView style={{flex : 1 , backgroundColor : 'white'}}>
+         <YStack flex={1}>
+
+             {/* header part  */}
+
+             <YStack px="$6" pt="$4" pb="$3" borderBlockWidth={1} borderBottomColor="$gray4">
+
+                <Text fontSize="$9" fontWeight="bold" color="$gray12" mb="$4">Explore Queues</Text>
+
+                {/* search queues   */}
+
+                <XStack bg="$gray2" br="$5" px="$4" ai="center" h={48}>
+
+                   <Ionicons name="search" size={20} color="#9ca3af"/>
+
+                   <Input unstyled flex={1} placeholder="Search for queues..."
+                     value={searchQuery} onChangeText={handleTextChange(setSearchQuery)} size="$4" ml="$3" placeholderTextColor="$gray10"/>
+
+                     {searchQuery && (
+                         <Button unstyled onPress={() => setSearchQuery('')} pressStyle={{opacity : 0.6}}>
+                              <Ionicons name="close-circle" size={24} color="$9ca3af"/>
+                         </Button>
+                     )}
+                </XStack>
+             </YStack>
+
+            
+            {/* categories section  */}
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{padding : 24 , gap : 12}}>
 
 
+              {CATEGORIES.map((category) => (
+                  
+                    <Button key={category.id} unstyled onPress={() => setSelectedCategory(category.id)}
+                      pressStyle={{scale : 0.95}}>
+
+                        <YStack>
+
+                        </YStack>
+
+                    </Button>
+
+              ))}
+
+            </ScrollView>
+           
+         </YStack>
+        
+       </SafeAreaView>
+
+    )
+};
 
 
-
-  
-
-
-
-       
-
-
-
-
-
-
-}
 
 
 
