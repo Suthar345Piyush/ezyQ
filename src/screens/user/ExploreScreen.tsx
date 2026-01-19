@@ -189,11 +189,135 @@ export default function ExploreScreen({ navigation} : Props) {
                     <Button key={category.id} unstyled onPress={() => setSelectedCategory(category.id)}
                       pressStyle={{scale : 0.95}}>
 
-                        <YStack>
+                        <YStack ai="center" gap="$2" px="$4" py="$3" br="$6" bg={selectedCategory === category.id ? category.color : '$gray2'} minWidth={90}>
+
+                           <Circle size={40} bg={selectedCategory === category.id ? 'white' : '$gray4'}>
+
+                              <Ionicons name={category.icon as any} size={20} color={selectedCategory === category.id ? category.color.replace('$' , '#') : '#6b7280'}/>
+
+                           </Circle>
+
+                           <Text fontSize="$2" fontWeight="600" color={selectedCategory === category.id ? 'white' : '$gray11'}>
+
+                           </Text>
                         </YStack>
                     </Button>
               ))}
             </ScrollView>
+
+
+
+            {/* queue list  */}
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+               <YStack px="$6" pb="$6" gap="$3">
+
+                 <Text fontSize="$4" fontWeight="600" color="$gray11" mb="$2">
+                   {filteredQueues.length} queues found
+                 </Text>
+
+
+                 {filteredQueues.map((queue) => (
+
+                    <Card key={queue.id} elevate br="$5" p="$4" bg="white" onPress={() => navigation.navigate('QueueDetails' , {queueId : queue.id})} pressStyle={{scale : 0.98}}>
+
+                       <XStack ai="flex-start" gap="$3">
+                        <Circle size={60} bg="$gray2">
+
+                           <Ionicons name={getCategoryIcon(queue.category) as any}
+                            size={30} color="#3b82f6"/>
+
+                        </Circle> 
+
+
+                        <YStack flex={1}>
+                          <XStack ai="center" jc="space-between" mb="$2">
+
+                            <Text fontSize="$5" fontWeight="bold" color="$gray12">
+                              {queue.name}
+                            </Text>
+
+                            <XStack bg="$green2" px="$2" py="$1" br="$2" ai="center" gap="$1">
+
+                              <Circle size={6} bg="$green10"/>
+                                <Text fontSize="$1" color="$gray11" fontWeight="600">ACTIVE</Text>
+
+                            </XStack>
+                          </XStack>
+
+                          <Text fontSize="$2" color="$gray10" mb="$3">{queue.category}</Text>
+
+
+
+           {/* card items - location , time , distance  */}
+     
+                          <XStack gap="$3" mb="$3" ai="center">
+
+                             <XStack ai="center" gap="$1">
+                               <Ionicons name="time-outline" size={16} color="#6b7280"/>
+
+                               <Text fontSize="$3" color="$gray11">{queue.waitTime} min</Text>
+                             </XStack>
+                             
+                          <XStack ai="center" gap="$1">
+                             <Ionicons name="people-outline" size={16} color="#6b7280"/>
+
+                              <Text fontSize="$3" color="$gray11">{queue.peopleWaiting} waiting</Text>
+                          </XStack>
+
+                        <XStack>
+                            <Ionicons name="location-outline" size={16} color="#3b82f6"/>
+
+                               <Text fontSize="$3" color="$blue10">{queue.distance}</Text>
+
+                            </XStack>
+                          </XStack>
+
+
+                          <XStack ai="center" jc="space-between">
+                            <XStack ai="center" gap="$1">
+                               <Ionicons  name="star" size={16} color="#f59e0b"/>
+                               <Text fontSize="$3" fontWeight="600" color="$gray12">{queue.rating}</Text>
+
+                               <Text fontSize="$2" color="$gray10">(245 review)</Text>
+                            </XStack>
+
+                            <Button size="$3" bg="$blue10" br="$3" px="$4" pressStyle={{scale : 0.95}}>
+
+                              <Text color="white" fontSize="$2" fontWeight="600">Join Queue</Text>
+                            </Button>
+                          </XStack>
+                        </YStack>
+                       </XStack>
+                    </Card>
+                 ))};
+
+                 {filteredQueues.length === 0 && (
+                    <YStack ai="center" jc="center" py="$10">
+                       <Circle size={80} bg="$gray2" mb="$4">
+
+                        <Ionicons name="search-outline" size={40} color="#9ca3af" />
+                       </Circle>
+
+                       <Text fontSize="$5" fontWeight="600" color="$gray12" mb="$2">
+                            No queues found
+                       </Text>
+
+                       <Text fontSize="$3" color="$gray10" ta="center">
+                         Try adjusting your search or category
+                       </Text>
+                    </YStack>
+                 )}
+
+
+
+               </YStack>
+            </ScrollView>
+
+
+
+
+
          </YStack>
        </SafeAreaView>
 
