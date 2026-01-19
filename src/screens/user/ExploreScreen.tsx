@@ -190,17 +190,11 @@ export default function ExploreScreen({ navigation} : Props) {
                       pressStyle={{scale : 0.95}}>
 
                         <YStack>
-
                         </YStack>
-
                     </Button>
-
               ))}
-
             </ScrollView>
-           
          </YStack>
-        
        </SafeAreaView>
 
     )
