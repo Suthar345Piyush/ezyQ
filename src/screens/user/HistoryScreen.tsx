@@ -235,22 +235,159 @@ export default function HistoryScreen({navigation} : Props) {
 
                    <Text fontSize="$2" color="$green11" fontWeight="600" mb="$1">Completed</Text>
 
-                  <Text fontSize="$8" fontWeight="bold" color="$blue11">{totalCompleted}</Text>
+                  <Text fontSize="$8" fontWeight="bold" color="$green11">{totalCompleted}</Text>
 
                  </Card>
 
+                 <Card flex={1} elevate br="$4" p="$4" bg="$purple2">
 
-                 <Card>
+                   <Text fontSize="$8" fontWeight="600" mb="$1" color="$purple11">Avg Wait</Text>
 
-                   <Text></Text>
-                   <Text></Text>
+                   <Text fontSize="$8" fontWeight="bold" color="$purple11">{Math.round(avgWaitTime)}m</Text>
 
                  </Card>
-
               </XStack>
 
 
+
+
+              {/* filter tabs of queue status  */}
+
+              <XStack gap="$2">
+
+                <Button flex={1} size="$3" bg={filter === 'all' ? '$blue10' : '$gray2'} br="$3" onPress={() => setFilter('all')} pressStyle={{scale : 0.98}}>
+
+                  <Text fontSize="$3" fontWeight="600" color={filter === 'all' ? 'white' : '$gray11'}>All</Text>
+                </Button>
+
+
+                <Button flex={1} size="$3" bg={filter === 'completed' ? '$blue10' : '$gray2'} br="$3" onPress={() => setFilter('completed')} pressStyle={{scale : 0.98}}>
+
+                  <Text fontSize="$3" fontWeight="600"  color={filter === 'completed' ? 'white' : '$gray11'}>Completed</Text>
+                </Button>
+
+
+                <Button flex={1} size="$3" bg={filter === 'cancelled' ? '$blue10' : '$gray2'} br="$3" onPress={() => setFilter('cancelled')} pressStyle={{scale : 0.98}}>
+
+                  <Text fontSize="$3" fontWeight="600" color={filter === 'cancelled' ? 'white' : '$gray11'}>Cancelled</Text>
+
+                </Button>
+              </XStack>
              </YStack>
+
+
+             {/* list of the history queues  */}
+
+             <ScrollView showsVerticalScrollIndicator={false}>
+               
+                 <YStack px="%6" py="$4" gap="$3">
+
+                   {filteredHistory.map((item) => (
+                      
+                       <Card key={item.id} elevate br="$5" p="$4" bg="white" onPress={() => {}} pressStyle={{scale : 0.98}}>
+
+                        <XStack ai="center" gap="$3" mb="$3">
+
+                           <Circle size={56} bg="$gray2">
+
+                             <Ionicons name={getCategoryIcon(item.category) as any} size={28} color="#3b82f6"/>
+
+                           </Circle>
+
+                           <YStack flex={1}>
+
+                             <Text fontSize="$5" fontWeight="bold" color="$gray12" mb="$1">{item.name}</Text>
+
+                             <XStack ai="center" gap="$2">
+                              <Ionicons name="calendar-outline" size={14} color="#6b7280"/>
+                               
+                                <Text fontSize="$2" color="$gray11">{item.date} at {item.time}</Text>
+
+                             </XStack>
+                           </YStack>
+
+
+                           <XStack bg={getStatusBg(item.status)} px="$3" py="$2" br="$3" ai="center" gap="$1">
+
+                            <Circle size={6} bg={getStatusColor(item.status)} />
+
+                               <Text fontSize="$2" color={getStatusColor(item.status)} fontWeight="600">
+
+                                 {getStatusText(item.status).toUpperCase()}
+
+                               </Text>
+                           </XStack>
+                        </XStack>
+
+
+                        <XStack bg="$gray2" br="$3" p="$3" ai="center" jc="space-between" mb={item.status === 'completed' ? '$3' : 0}>
+
+                           <XStack ai="center" gap="$2">
+                            <Text fontSize="$2" color="$gray11">Ticket #</Text>
+
+                            <Text fontSize="$4" fontWeight="bold" color="$gray12">
+                                    {item.ticketNumber}
+                                 </Text>
+                           </XStack>
+
+
+                           {item.status === 'completed' && (
+                              <XStack ai="center" gap="$2">
+                                <Ionicons name="time-outline" size={16} color="#6b7280"/>
+                                <Text fontSize="$3" color="$gray11"> 
+                                  Wait : {item.waitTime} min
+                                </Text>
+                              </XStack>
+                           )}
+                        </XStack>
+
+
+
+                        {/* rating on the card  */}
+
+                        {item.status === 'completed' && item.rating && (
+                            <XStack ai='center' jc="space-between">
+                              <XStack ai="center" gap="$1">
+
+                                 {[1,2,3,4,5].map((star) => (
+                                     <Ionicons  key={star} name={star <= item.rating! ? 'star' : 'star-outline'}
+                                      size={18} color={star <= item.rating! ? '#f59e0b' : '#d1d5db'}/>
+                                 ))}
+
+                              </XStack>
+
+                              <Button size="$2" chromeless pressStyle={{opacity : 0.6}}>
+                                <Text fontSize="$2" color="$blue10" fontWeight="600">View Receipt</Text>
+                              </Button>
+                            </XStack>
+                        )}
+                       </Card>
+                   ))}
+
+
+                   {/* last if nothing work , showing history not found  */}
+
+                  {filteredHistory.length === 0 && (
+                     <YStack ai="center" jc="center" py="$10">
+
+                       <Circle size={80} bg="$gray2" mb="$4">
+
+                         <Ionicons name="time-outline" size={40} color="$9ca3af"/>
+
+                       </Circle>
+
+                       <Text fontSize="$5" fontWeight="600" color="$gray12" mb="$2">No history found</Text>
+
+                       <Text fontSize="$3" color="$gray10" ta="center">Your queue history will appear here</Text>
+                      </YStack>
+                  )}
+
+                 </YStack>
+
+             </ScrollView>
+
+
+
 
            </YStack>
         </SafeAreaView>
