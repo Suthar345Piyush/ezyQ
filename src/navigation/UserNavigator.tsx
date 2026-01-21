@@ -20,8 +20,8 @@ export default function BusinessNavigator() {
            borderTopWidth : 1,
            borderTopColor : '#e5e7ab',
            height : 60,
-           paddingBottom : 8,
-           paddingTop : 8,
+           paddingBottom : 5,
+           paddingTop : 5,
          },
           tabBarLabelStyle : {
              fontSize : 12,

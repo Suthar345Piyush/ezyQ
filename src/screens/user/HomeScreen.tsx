@@ -9,6 +9,7 @@ import { UserTabScreenProps } from "@/src/types/navigation.types";
 import { useAuthStore } from "@/src/stores/authStore";
 
 
+
 type Props = UserTabScreenProps<'Home'>;
 
 
@@ -107,7 +108,7 @@ export default function HomeScreen({navigation} : Props) {
 
      return (
 
-        <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}}>
+        <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}} edges={['bottom']}>
          <ScrollView showsVerticalScrollIndicator={false} refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
          }>
