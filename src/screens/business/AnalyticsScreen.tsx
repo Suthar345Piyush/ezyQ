@@ -1,15 +1,16 @@
+// analytics screen code here 
 
-import { YStack, Text } from 'tamagui';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView , RefreshControl } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { YStack , XStack , Text , Card , Button , Circle } from "tamagui";
+import { Ionicons } from "@expo/vector-icons";
+import { BusinessTabScreenProps } from "@/src/types/navigation.types";
+import { useState } from "react";
 
-export default function AnalyticsScreen() {
-  return (
-    <SafeAreaView style={{ flex: 1  , backgroundColor : 'white'}}>
-      <YStack f={1} jc="center" ai="center" bg="$background">
-        <Text fontSize="$8" fontWeight="bold" color="$gray12">
-          Analytics
-        </Text>
-      </YStack>
-    </SafeAreaView>
-  );
-}
+type Props = BusinessTabScreenProps<'Analytics'>;
+
+
+// dummy data initially 
+
+ 
+
