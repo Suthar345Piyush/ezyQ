@@ -221,7 +221,7 @@ export default function HistoryScreen({navigation} : Props) {
 
               {/* cards with queue statistics */}
 
-              <XStack gap="$3" mb="$4">
+              <XStack gap="$4" mb="$4" >
                  <Card flex={1} elevate br="$4" p="$4" bg="$blue2">
 
                    <Text fontSize="$2" color="$blue11" fontWeight="600" mb="$1">Total Queues</Text>
@@ -280,7 +280,7 @@ export default function HistoryScreen({navigation} : Props) {
 
              <ScrollView showsVerticalScrollIndicator={false}>
                
-                 <YStack px="%6" py="$4" gap="$3">
+                 <YStack px="%6" py="$4" gap="$4" ml="$3" mr="$3">
 
                    {filteredHistory.map((item) => (
                       
@@ -323,7 +323,7 @@ export default function HistoryScreen({navigation} : Props) {
                         <XStack bg="$gray2" br="$3" p="$3" ai="center" jc="space-between" mb={item.status === 'completed' ? '$3' : 0}>
 
                            <XStack ai="center" gap="$2">
-                            <Text fontSize="$2" color="$gray11">Ticket #</Text>
+                            <Text fontSize="$2" color="$gray11">Ticket#</Text>
 
                             <Text fontSize="$4" fontWeight="bold" color="$gray12">
                                     {item.ticketNumber}

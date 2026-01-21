@@ -152,12 +152,12 @@ export default function ExploreScreen({ navigation} : Props) {
 
     return (
 
-       <SafeAreaView style={{flex : 1 , backgroundColor : 'white'}}>
+       <SafeAreaView style={{flex : 1 , backgroundColor : 'white'}} edges={['top']}>
          <YStack flex={1}>
 
              {/* header part  */}
 
-             <YStack px="$6" pt="$4" pb="$3" borderBlockWidth={1} borderBottomColor="$gray4">
+             <YStack px="$6" pt="$4" pb="$3" borderBottomColor="$gray4">
 
                 <Text fontSize="$9" fontWeight="bold" color="$gray12" mb="$4">Explore Queues</Text>
 
