@@ -22,10 +22,10 @@ export default function DashboardScreen({navigation} : Props) {
      const [loading , setLoading] = useState(true);
 
      const [stats , setStats] = useState({
-        totalQueues : 0,
-        activeQueues : 0,
-        totalCustomers : 0,
-        totalServed : 0,
+        total_queues : 0,
+        active_queues : 0,
+        total_customers : 0,
+        total_served : 0,
      });
 
 
@@ -137,7 +137,7 @@ export default function DashboardScreen({navigation} : Props) {
                      </Circle>
 
                      <Text fontSize="$7" fontWeight="bold" color="$gray12">
-                        {stats.totalCustomers}
+                        {stats.total_customers}
                      </Text>
 
                      <Text fontSize="$2" color="$gray11" mt="$1">
@@ -152,7 +152,7 @@ export default function DashboardScreen({navigation} : Props) {
                       <Ionicons name="checkmark-done" size={20} color="#3b82f6"/>
                     </Circle>
                     
-                    <Text fontSize="$7" fontWeight="bold" color="$gray12">{stats.totalServed}</Text>
+                    <Text fontSize="$7" fontWeight="bold" color="$gray12">{stats.total_served}</Text>
                     
                     <Text fontSize="$2" color="$gray11" mt="$1">Served Today</Text>
 
@@ -175,7 +175,7 @@ export default function DashboardScreen({navigation} : Props) {
                      </Circle>
 
                      <Text fontSize="$8" fontWeight="bold" color="$gray12">
-                       {stats.totalQueues} 
+                       {stats.total_queues} 
                      </Text>
                      
                      <Text fontSize="$3" mt="$1" color="$gray11">
@@ -193,7 +193,7 @@ export default function DashboardScreen({navigation} : Props) {
                       </Circle>
 
                       <Text fontSize="$8" fontWeight="bold" color="$gray12">
-                         {stats.activeQueues}
+                         {stats.active_queues}
                       </Text>
 
                       <Text fontSize="$3" color="$gray11" mt="$1">
@@ -213,7 +213,7 @@ export default function DashboardScreen({navigation} : Props) {
 
 
                   <XStack gap="$3">
-                     <Card flex={1} elevate br="$5" p="$5" bg="$green10" onPress={() => navigation.navigate('Queues' , {screen : 'CreateQueue'})} pressStyle={{scale : 0.98}}>
+                     <Card flex={1} elevate br="$5" p="$5" bg="$green10" onPress={() => navigation.navigate('Queues')} pressStyle={{scale : 0.98}}>
 
 
                       <Circle size={48} bg="white" mb="$3">
@@ -281,7 +281,7 @@ export default function DashboardScreen({navigation} : Props) {
 
 
 
-                      <Button size="$4" bg="$green10" br="$4" onPress={() => navigation.navigate('Queues' , {screen : 'CreateQueue'})} pressStyle={{scale : 0.98}}>
+                      <Button size="$4" bg="$green10" br="$4" onPress={() => navigation.navigate('Queues')} pressStyle={{scale : 0.98}}>
 
                          <XStack ai="center" gap="$2">
 
@@ -298,7 +298,7 @@ export default function DashboardScreen({navigation} : Props) {
                 ) : (
                    activeQueues.slice(0 , 3).map((queue) => {
 
-                      <Card key={queue.id} elevate br="$5" p="$4" bg="white" onPress={() => navigation.navigate('Queues' , {screen : 'QueueDetails' , params : { queueId : queue.id}})} pressStyle={{scale : 0.98}}>
+                      <Card key={queue.id} elevate br="$5" p="$4" bg="white" onPress={() => navigation.navigate('Queues')} pressStyle={{scale : 0.98}}>
 
                         <XStack ai="center" jc="space-between" mb="$3">
 
