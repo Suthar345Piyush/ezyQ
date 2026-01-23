@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView , RefreshControl } from "react-native";
 import { BusinessTabScreenProps } from "@/src/types/navigation.types";
 import { XStack , YStack , Card , Text , Circle, Button, Input } from "tamagui";
-import  {useState , useEffect} from 'react';
+import  {useState} from 'react';
 import { Ionicons } from "@expo/vector-icons";
 
 
@@ -18,6 +18,7 @@ export default function QueuesScreen({navigation} : Props) {
 
      const [refreshing , setRefreshing] = useState(false);
      const [searchQuery , setSearchQuery] = useState("");
+
 
     // function to take safe input from tamagui input function
     // basically setting the input text 
@@ -39,10 +40,10 @@ export default function QueuesScreen({navigation} : Props) {
           name : "Government Office",
           category : "Government",
           status : "active",
-          current_number : "35",
-          current_capacity : "26",
-          avg_wait_time : "15",
-          max_capacity : "40",
+          current_number : 35,
+          current_capacity : 26,
+          avg_wait_time : 15,
+          max_capacity : 40,
           color : "$green10",
        },
 
@@ -51,10 +52,10 @@ export default function QueuesScreen({navigation} : Props) {
         name : "City Bank",
         category : "Banking",
         status : "active",
-        current_number : "25",
-        current_capacity : "15",
-        avg_wait_time : "10",
-        max_capacity : "30",
+        current_number : 25,
+        current_capacity : 15,
+        avg_wait_time : 10,
+        max_capacity : 30,
         color : "$blue10",
      },
 
@@ -63,10 +64,10 @@ export default function QueuesScreen({navigation} : Props) {
       name : "City Hospital",
       category : "Healthcare",
       status : "active",
-      current_number : "43",
-      current_capacity : "60",
-      avg_wait_time : "20",
-      max_capacity : "120",
+      current_number : 43,
+      current_capacity : 60,
+      avg_wait_time : 20,
+      max_capacity : 120,
       color : "$red10",
    },
 
@@ -75,10 +76,10 @@ export default function QueuesScreen({navigation} : Props) {
     name : "Food Coffee",
     category : "Restaurant",
     status : "paused",
-    current_number : "25",
-    current_capacity : "12",
-    avg_wait_time : "5",
-    max_capacity : "20",
+    current_number : 25,
+    current_capacity : 12,
+    avg_wait_time : 5,
+    max_capacity : 20,
     color : "$gray10",
   },
 
@@ -87,10 +88,10 @@ export default function QueuesScreen({navigation} : Props) {
     name : "Mr.Cineplex",
     category : "Entertainment",
     status : "active",
-    current_number : "45",
-    current_capacity : "50",
-    avg_wait_time : "5",
-    max_capacity : "80",
+    current_number : 45,
+    current_capacity : 35,
+    avg_wait_time : 5,
+    max_capacity : 80,
     color : "$black10",
  },
   
@@ -99,10 +100,10 @@ export default function QueuesScreen({navigation} : Props) {
   name : "Mr.Clinic",
   category : "Healthcare",
   status : "active",
-  current_number : "30",
-  current_capacity : "12",
-  avg_wait_time : "15",
-  max_capacity : "25",
+  current_number : 30,
+  current_capacity : 12,
+  avg_wait_time : 15,
+  max_capacity : 25,
   color : "$red10",
 },
       ];
@@ -249,80 +250,96 @@ export default function QueuesScreen({navigation} : Props) {
                   {filteredQueues.map((queue) => (
 
                     <Card  elevate key={queue.id} br="$5" p="$4" bg="white" onPress={() => navigation.navigate('QueueDetails')} pressStyle={{scale : 0.98}}>
+ 
+                        <XStack ai="center" jc="space-between" mb="$4">
+                           <YStack flex={1}>
+                              <Text fontSize="$5" fontWeight="bold" color="$gray12">{queue.name}</Text>
+                              <Text fontSize="$2" color="$gray11" mt="$1">{queue.category}</Text>
+                            </YStack>
 
-                     <XStack ai="center" jc="space-between" mb="$4">
-                          <YStack flex={1}>
-                            <Text fontSize="$5" fontWeight="bold" color="$gray12">{queue.name}</Text>
-                            <Text fontSize="$2" color="$gray11" mt="$1">{queue.category}</Text>
-                          </YStack>
 
 
+                            <XStack bg={getStatusBg(queue.status)} px="$3" py="$3" br="$3" ai="center" gap="$2">
 
-                          <XStack bg={getStatusBg(queue.status)} px="$3" py="$3" br="$3" ai="center" gap="$2">
+                               <Circle size={6} bg={getStatusColor(queue.status)} />
 
-                            <Circle size={6} bg={getStatusColor(queue.status)} />
-
-                              <Text fontSize="$2" color={getStatusColor(queue.status)} fontWeight="600" textTransform="uppercase">
-                                  {queue.status}
-                              </Text>
+                                <Text fontSize="$2" color={getStatusColor(queue.status)} fontWeight="600" textTransform="uppercase">
+                                    {queue.status}
+                                 </Text>
 
                           </XStack>
                      </XStack>
 
 
-                     <XStack gap="$3">
+
+                  <XStack gap="$3">
 
                       <YStack flex={1} bg="$gray2" p="$3" br="$3" ai="center">
-
                         <Text fontSize="$7" fontWeight="bold" color="$gray12">{queue.current_capacity}</Text>
-                        <Text fontSize="$3" fontWeight="600" >Waiting</Text>
+                        <Text fontSize="$3" fontWeight="600" color="$gray11" >Waiting</Text>
                       </YStack>
 
 
+                      <YStack flex={1}bg="$gray2" p="$3" br="$3" ai="center">
+                         <Text fontSize="$7" fontWeight="bold" color="$gray12">#{queue.current_number}</Text>
+                         <Text fontSize="$3" fontWeight="600" color="$gray11">Current</Text>
+                      </YStack>
+
+
+                      <YStack flex={1}bg="$gray2" p="$3" br="$3" ai="center">
+                         <Text fontSize="$7" fontWeight="bold" color="$gray12">{queue.avg_wait_time}</Text>
+                         <Text fontSize="$3" fontWeight="600" color="$gray11">Wait</Text>
+                      </YStack>
+
+
+                      <YStack flex={1}bg="$gray2" p="$3" br="$3" ai="center">
+                         <Text fontSize="$7" fontWeight="bold" color="$gray12">{queue.max_capacity}</Text>
+                         <Text fontSize="$3" fontWeight="600" color="$gray11">Maximum Capacity</Text>
+                      </YStack>
 
                      </XStack>
 
 
+                     {/* progress bar representation  */}
 
+                     <YStack mt="$3">
+                        <XStack jc="space-between" mb="$2">
+                          <Text fontSize="$2" color="$gray11">Capacity</Text>
+                          <Text fontSize="$2" color="$gray11">{queue.current_capacity / queue.max_capacity}</Text>
+                        </XStack>
+
+
+                        <YStack bg="$gray2" h={6} br="$3" overflow="hidden">
+                          <XStack bg={queue.color} h={6} width={`${(queue.current_capacity / queue.max_capacity) * 100}%`}/>
+                        </YStack>
+
+                     </YStack>
                     </Card>
 
                   ))}
+
+
+                  {
+                     filteredQueues.length === 0 && (
+                        <Card elevate br="$5" p="$8" bg="white" ai="center">
+                           <Circle size={80} bg="$gray2" mb="$4">
+                              <Ionicons name="search-outline" size={40} color="#9ca3af"/>
+                           </Circle>
+
+                           <Text fontSize="$5" fontWeight="600" color="$gray12">No queues found</Text>
+
+                           <Text fontSize="$3" color="$gray10" mt="$2">Try a different search term</Text>
+                        </Card>
+                     )
+                  }
+
                 </YStack>
 
-
-
-
             </YStack>
-
-
-
-
-
-
-
-
-
-
 
             </ScrollView>
          </SafeAreaView>
      )
+};
 
 
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-}
