@@ -48,6 +48,8 @@ export type BusinessTabParamList = {
    Queues : undefined;
    Analytics : undefined;
    Settings : undefined;
+   CreateQueues : undefined;
+   QueueDetails : undefined;
 }
 
 
