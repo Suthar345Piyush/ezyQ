@@ -105,7 +105,7 @@ export default function DashboardScreen({navigation} : Props) {
 
      return (
 
-        <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}}>
+        <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}} edges={['bottom']}>
           <ScrollView showsVerticalScrollIndicator={false} refreshControl={
              <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
           }>

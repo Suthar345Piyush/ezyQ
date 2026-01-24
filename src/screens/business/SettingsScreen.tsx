@@ -137,7 +137,7 @@ export default function SettingsScreen({navigation} : Props) {
 
 
       return (
-         <SafeAreaView style={{flex : 1 , backgroundColor : "#f8f9fa"}}>
+         <SafeAreaView style={{flex : 1 , backgroundColor : "#f8f9fa"}} edges={['bottom']}>
             <ScrollView showsVerticalScrollIndicator={false}>
 
                  {/* header part  */}
@@ -190,7 +190,7 @@ export default function SettingsScreen({navigation} : Props) {
                    settingsOptions.map((section , sectionIndex) => (
                       <YStack key={sectionIndex} mb="$4">
 
-                        <Text fontSize="$4" fontWeight="600" color="$gray12" mb="$3">{section.section}</Text>
+                        <Text fontSize="$4" fontWeight="bold" color="$gray12" mb="$3">{section.section}</Text>
 
                         <Card elevate br="$5" bg="white" overflow="hidden">
                            {
@@ -235,113 +235,83 @@ export default function SettingsScreen({navigation} : Props) {
 
                     </YStack>
                    ))
-                 }
+                 };
 
 
 
-                 {/* rendering account options  */}
+   
 
 
-                 <YStack mb="$4">
-                   <Text fontSize='$4' fontWeight="600" color="$gray12" mb="$3">
-                    Account
-                   </Text>
+<YStack mb="$4">
+  <Text fontSize='$4' fontWeight="bold" color="$gray12" mb="$3">
+    Account
+  </Text>
 
-                   <Card elevate br="$5" bg="white" overflow="hidden">
-                     {
-                       accountOptions.map((option , index) => (
-                            
-                            <YStack key={index}> 
+  <Card elevate br="$5" bg="white" overflow="hidden">
+    {accountOptions.map((option, index) => (
+      <YStack key={index}> 
+        <Button chromeless onPress={option.onPress} pressStyle={{opacity: 0.6}} width="100%">
+          <XStack ai="center" p="$4" jc="space-between" width="100%">
+            <XStack ai="center" gap="$3" flex={1}>
+              <Circle size={40} bg={`${option.color.replace('10', '2')}`}>
+                <Ionicons name={option.icon as any} size={20} color={option.color.replace('$', '#')}/>
+              </Circle>
+              <Text fontSize="$4" fontWeight="500" color="$gray12">{option.title}</Text>
+            </XStack>
+            <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
+          </XStack>
+        </Button>
 
-                               <Button chromeless onPress={option.onPress} pressStyle={{opacity : 0.6}}>
-
-                                  <XStack ai="center" p="$4" jc="space-between" width="100%">
-
-                                     <XStack ai="center" gap="$3" flex={1}>
-
-                                        <Circle size={40} bg={`${option.color.replace('10' , '2')}`}>
-
-                                           <Ionicons name={option.icon as any} size={20} color={option.color.replace('$' , '#')}/>
-
-                                        </Circle>
-
-
-                                        <Text fontSize="$4" fontWeight="500" color="$gray12">{option.title}</Text>
-                                  
-                                     </XStack>
-
-                                     <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
-                                  </XStack>
-                               </Button>
-
-                               {
-                                 index < accountOptions.length - 1 && (
-                                   <Separator mx="$4"/>
-                                 )
-                               }
-
-                            </YStack>
-
-                       ))
-                     }
-
-                   </Card>
-                 </YStack>
+        {index < accountOptions.length - 1 && (
+          <Separator mx="$4"/>
+        )}
+      </YStack>
+    ))}
+  </Card>
+</YStack>
 
 
 
-                 {/* support & help section at the end  of the screen  */}
-
-                 <YStack mb="$4">
-                   <Text fontSize="$4" fontWeight="600" color="$gray12" mb="$3">Support & Help</Text>
-
-                     <Card elevate br="$5" bg="white" overflow="hidden">
-
-                       <Button chromeless pressStyle={{opacity : 0.6}}>
-
-                          <XStack ai="center" p="$4" jc="space-between" width="100%">
-
-                            <XStack ai="center" gap="$3">
-
-                                <Circle size={40} bg="$blue2">
-                                   <Ionicons name="help-circle" size={20} color="#3b82f6"/>
-                                </Circle>
-
-                                <Text fontSize="$4" fontWeight="500" color="$gray12">Help Center</Text>
-
-                            </XStack>
-
-                            <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
-                             
-                          </XStack>
-                       </Button>
+                {/* support & help section */}
 
 
-                       <Separator mx="$4"/>
+
+<YStack mb="$4">
+  <Text fontSize="$4" fontWeight="bold" color="$gray12" mb="$3">Support & Help</Text>
+
+  <Card elevate br="$5" bg="white" overflow="hidden">
+    <Button chromeless pressStyle={{opacity: 0.6}} width="100%">
+      <XStack ai="center" p="$4" jc="space-between" width="100%">
+        <XStack ai="center" gap="$3" flex={1}>
+          <Circle size={40} bg="$blue2">
+            <Ionicons name="help-circle" size={20} color="#3b82f6"/>
+          </Circle>
+          <Text fontSize="$4" fontWeight="500" color="$gray12">Help Center</Text>
+        </XStack>
+        <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
+      </XStack>
+    </Button>
+
+    <Separator mx="$4"/>
+
+    <Button chromeless pressStyle={{opacity: 0.6}} width="100%">
+      <XStack ai="center" p="$4" jc="space-between" width="100%">
+        <XStack ai="center" gap="$3" flex={1}>
+          <Circle size={40} bg="$purple2">
+            <Ionicons name="mail" size={20} color="#a855f7"/>
+          </Circle>
+          <Text fontSize="$4" fontWeight="500" color="$gray12">Contact Support</Text>
+        </XStack>
+        <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
+      </XStack>
+    </Button>
+  </Card>
+</YStack>
 
 
-                       <Button chromeless pressStyle={{opacity : 0.6}}>
 
-                          <XStack ai="center" p="$4" jc="space-between" width="100%">
 
-                            <XStack ai="center" gap="$3">
-
-                               <Circle size={40} bg="$purple2">
-                                 
-                                 <Ionicons name="mail" size={20} color="#a855f7"/>
-                               </Circle>
-
-                               <Text fontSize="$4" fontWeight="500" color="$gray12">Contact Support</Text>
-                            </XStack>
-
-                            <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
-                          </XStack>
-                       </Button>
-
-                     </Card>
-
-                 </YStack>
-
+                
 
 
                  {/* some last app information  */}
