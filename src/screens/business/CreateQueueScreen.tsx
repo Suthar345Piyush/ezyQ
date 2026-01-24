@@ -48,7 +48,7 @@ export default function CreateQueueScreen({navigation} : Props) {
 
 
     return (
-        <SafeAreaView style={{flex : 1 , backgroundColor : "#f8f9fa"}}>
+        <SafeAreaView style={{flex : 1 , backgroundColor : "#f8f9fa"}} edges={['bottom']}>
 
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex : 1}}>
 
