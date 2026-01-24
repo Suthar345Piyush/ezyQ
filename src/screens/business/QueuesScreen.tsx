@@ -249,7 +249,7 @@ export default function QueuesScreen({navigation} : Props) {
 
                   {filteredQueues.map((queue) => (
 
-                    <Card  elevate key={queue.id} br="$5" p="$4" bg="white" onPress={() => navigation.navigate('QueueDetails' , {queueId : queue.id})} pressStyle={{scale : 0.98}}>
+                    <Card  elevate key={queue.id} br="$5" p="$4" bg="white" onPress={() => navigation.navigate('QueueDetails' , {queueId : queue.id as any})} pressStyle={{scale : 0.98}}>
  
                         <XStack ai="center" jc="space-between" mb="$4">
                            <YStack flex={1}>
