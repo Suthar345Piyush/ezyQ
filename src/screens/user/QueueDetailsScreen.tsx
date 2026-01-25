@@ -466,41 +466,53 @@ export default function QueueDetailsScreen({navigation , route} : Props) {
                     </Card>
 
 
+
+
                     {/* action buttons like direction , queue joining , call to supprot team */}
 
 
-                    
+                    {!isInQueue && (
+                       <YStack gap="$3">
+                          <Button size="$5" bg="$blue10" br="$4" onPress={handleJoinQueue} pressStyle={{scale : 0.98}}>
+
+                             <XStack ai="center" gap="$2">
+                               <Ionicons name="add-circle" size={24} color="white"/>
+
+                               <Text fontSize="$5" fontWeight="600" color="white">Join Queue</Text>
+
+                             </XStack>
+                          </Button>
 
 
+                          <XStack gap="$3">
+                             <Button flex={1} size="$4" bg="$gray2" br="$4" pressStyle={{scale : 0.98}}>
+                               
+                                <XStack ai="center" gap="$2">
+                                   <Ionicons name="navigate" size={20} color="#6b7280"/>
+                                   <Text fontSize="$4" fontWeight="600" color="$gray11">Directions</Text>
+                                </XStack>
+
+                             </Button>
 
 
+                             <Button flex={1} size="$4" bg="$gray2" br="$4" pressStyle={{scale : 0.98}}>
 
+                               <XStack ai="center" gap="$2">
+                                 <Ionicons name="call" size={20} color="#6b7280"/>
+                                 <Text fontSize="$4" fontWeight="600" color="$gray11">Call</Text>
+                               </XStack>
+                             </Button>
 
+                          </XStack>
 
-
-
-
-
-
-
-
-
-
+                        </YStack>
+                    )}
 
                 </YStack>
-
-
-
-
-
-
-                 
+         
                </ScrollView>
             </SafeAreaView>
         )
+};
 
 
-
-
-      
-}
