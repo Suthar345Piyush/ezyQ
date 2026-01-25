@@ -5,10 +5,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { YStack , XStack , Card , Text , Circle , Button , Separator } from "tamagui";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { BusinessTabScreenProps } from "@/src/types/navigation.types";
+import { BusinessStackScreenProps } from "@/src/types/navigation.types";
 
 
-type  Props = BusinessTabScreenProps<'QueueDetails'>;
+
+type  Props = BusinessStackScreenProps<'QueueDetails'>;
 
 
 export default function QueueDetailScreen({navigation , route} : Props) {

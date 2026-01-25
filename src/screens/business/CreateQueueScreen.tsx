@@ -6,13 +6,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { YStack , XStack , Card , Text , Circle , Button , Input , TextArea} from "tamagui";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { BusinessTabScreenProps } from "@/src/types/navigation.types";
+import { BusinessStackScreenProps } from "@/src/types/navigation.types";
 
 
 
-type Props = BusinessTabScreenProps<'CreateQueues'>;
+type Props = BusinessStackScreenProps<'CreateQueues'>;
 
-export default function CreateQueueScreen({navigation} : Props) {
+export default function CreateQueueScreen({navigation , route} : Props) {
         
     //  queue creation form 
 
@@ -184,8 +184,7 @@ export default function CreateQueueScreen({navigation} : Props) {
                         Queue Tips
                       </Text>
 
-                      <Text fontSize="$3" color="$blue11" lineHeight={20}> Set realistic capacity and service times. You can always adjust these later from queue settings.
-</Text>
+                      <Text fontSize="$3" color="$blue11" lineHeight={20}> Set realistic capacity and service times. You can always adjust these later from queue settings.</Text>
 
                      </YStack>
 
