@@ -8,12 +8,13 @@ import  {useState} from 'react';
 import { Ionicons } from "@expo/vector-icons";
 
 
+
 type Props = BusinessTabScreenProps<'Queues'>;
 
 
 // main function for the  screen layout  
 
-export default function QueuesScreen({navigation} : Props) {
+export default function QueuesScreen({navigation , route} : Props) {
 
 
      const [refreshing , setRefreshing] = useState(false);
@@ -249,7 +250,7 @@ export default function QueuesScreen({navigation} : Props) {
 
                   {filteredQueues.map((queue) => (
 
-                    <Card  elevate key={queue.id} br="$5" p="$4" bg="white" onPress={() => navigation.navigate('QueueDetails')} pressStyle={{scale : 0.98}}>
+                    <Card  elevate key={queue.id} br="$5" p="$4" bg="white" onPress={() => navigation.navigate('QueueDetails' , {queueId : "123"})} pressStyle={{scale : 0.98}}>
                         <XStack ai="center" jc="space-between" mb="$4">
                            <YStack flex={1}>
                               <Text fontSize="$5" fontWeight="bold" color="$gray12">{queue.name}</Text>

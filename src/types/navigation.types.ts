@@ -4,6 +4,7 @@ import type { NavigatorScreenParams } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { UserRole } from "./index";
+import type { CompositeScreenProps } from "@react-navigation/native";
 
 
 //root stack
@@ -11,7 +12,7 @@ import type { UserRole } from "./index";
 export type RootStackParamList = {
    Auth : NavigatorScreenParams<AuthStackParamList>;
    User : NavigatorScreenParams<UserTabParamList>;
-   Business : NavigatorScreenParams<BusinessTabParamList>;
+   Business : NavigatorScreenParams<BusinessStackParamList>;
 } 
 
 
@@ -48,11 +49,16 @@ export type BusinessTabParamList = {
    Queues : undefined;
    Analytics : undefined;
    Settings : undefined;
-   CreateQueues : undefined;
-   QueueDetails : {
-       queueId : string | undefined;
-   };
 }
+
+
+export type BusinessStackParamList = {
+    BusinessTabs : NavigatorScreenParams<BusinessTabParamList>;
+    QueueDetails : {
+       queueId : string | undefined;
+    };
+    CreateQueues : undefined;
+};
 
 
 // screen props types  
@@ -67,8 +73,22 @@ NativeStackScreenProps<AuthStackParamList , T>;
 export type UserTabScreenProps<T extends keyof UserTabParamList> = 
 BottomTabScreenProps<UserTabParamList , T>;
 
+
+export type BusinessStackScreenProps<T extends keyof BusinessStackParamList> = 
+   CompositeScreenProps<
+     NativeStackScreenProps<BusinessStackParamList , T>,
+     BottomTabScreenProps<BusinessTabParamList>
+    >;
+
+
+    
 export type BusinessTabScreenProps<T extends keyof BusinessTabParamList> =
-BottomTabScreenProps<BusinessTabParamList , T>;
+  CompositeScreenProps<
+     BottomTabScreenProps<BusinessTabParamList , T>,
+     NativeStackScreenProps<BusinessStackParamList>
+   >;
+
+
 
 // navigation props types for hooks  
 
