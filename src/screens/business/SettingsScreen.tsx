@@ -43,7 +43,6 @@ export default function SettingsScreen({ navigation }: Props) {
           style: "destructive",
           onPress: () => {
             logout();
-            // Navigation will be handled by auth state change
           }
         }
       ]
@@ -138,6 +137,7 @@ export default function SettingsScreen({ navigation }: Props) {
 
 
   return (
+  
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }} edges={["bottom"]}>
       <ScrollView showsVerticalScrollIndicator={false}>
 

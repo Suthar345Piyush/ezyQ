@@ -7,6 +7,7 @@ import DashboardScreen from "../screens/business/DashboardScreen";
 import QueuesScreen from "../screens/business/QueuesScreen";
 import AnalyticsScreen from "../screens/business/AnalyticsScreen";
 import SettingsScreen from "../screens/business/SettingsScreen";
+import { Theme } from "tamagui";
 
 
 const Tab = createBottomTabNavigator<BusinessTabParamList>();
@@ -15,7 +16,7 @@ const Tab = createBottomTabNavigator<BusinessTabParamList>();
 export default function BusinessNavigator() {
     
      return (
-        <Tab.Navigator screenOptions={{headerShown : false , tabBarActiveTintColor : "#3b82f6" ,
+        <Tab.Navigator screenOptions={{headerShown : false , tabBarActiveTintColor : "#008000" ,
          tabBarInactiveTintColor : "#9ca3af", tabBarStyle : {
            borderTopWidth : 1,
            borderTopColor : '#e5e7eb',
