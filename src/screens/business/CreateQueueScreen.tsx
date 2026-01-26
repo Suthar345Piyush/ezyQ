@@ -75,7 +75,7 @@ export default function CreateQueueScreen({navigation , route} : Props) {
    {/* form space card  */}
 
                <YStack px="$6" mt="$-4" pb="$6">
-                 <Card elevate br="$5" p="$5" bg="white" mb="$4">
+                 <Card elevate br="$5" p="$5" bg="white" mb="$4" mt="$6">
 
                   <YStack gap="$4">
 

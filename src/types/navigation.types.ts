@@ -39,8 +39,18 @@ export type UserTabParamList = {
     Explore : undefined;
     History : undefined;
     Profile : undefined;
-    QueueDetails : {queueId : string};
-}
+};
+
+// user stack items list  
+
+export type  UserStackParamList = {
+    UserTabs : NavigatorScreenParams<UserTabParamList>;
+    QueueDetails : {
+       queueId : string | undefined;
+    };
+    JoinQueues : undefined;
+};
+
 
 //business bottom tabs 
 
@@ -51,6 +61,8 @@ export type BusinessTabParamList = {
    Settings : undefined;
 }
 
+
+// business stack items list 
 
 export type BusinessStackParamList = {
     BusinessTabs : NavigatorScreenParams<BusinessTabParamList>;
@@ -70,8 +82,18 @@ export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
 NativeStackScreenProps<AuthStackParamList , T>;
 
 
+
 export type UserTabScreenProps<T extends keyof UserTabParamList> = 
-BottomTabScreenProps<UserTabParamList , T>;
+  CompositeScreenProps<
+    BottomTabScreenProps<UserTabParamList , T>,
+    NativeStackScreenProps<UserStackParamList>
+    >;
+
+export type UserStackScreenProps<T extends keyof UserStackParamList> =
+  CompositeScreenProps<
+      NativeStackScreenProps<UserStackParamList , T>,
+      BottomTabScreenProps<UserTabParamList>
+   >;
 
 
 export type BusinessStackScreenProps<T extends keyof BusinessStackParamList> = 

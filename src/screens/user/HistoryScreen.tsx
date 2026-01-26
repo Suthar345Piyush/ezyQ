@@ -222,7 +222,7 @@ export default function HistoryScreen({navigation} : Props) {
               {/* cards with queue statistics */}
 
               <XStack gap="$4" mb="$4" >
-                 <Card flex={1} elevate br="$4" p="$4" bg="$blue2">
+                 <Card flex={1} elevate br="$4" p="$4" bg="$blue5">
 
                    <Text fontSize="$2" color="$blue11" fontWeight="600" mb="$1">Total Queues</Text>
 
@@ -231,7 +231,7 @@ export default function HistoryScreen({navigation} : Props) {
                  </Card>
 
 
-                 <Card flex={1} elevate br="4" p="$4" bg="$green2">
+                 <Card flex={1} elevate br="$4" p="$4" bg="$green5">
 
                    <Text fontSize="$2" color="$green11" fontWeight="600" mb="$1">Completed</Text>
 
@@ -239,11 +239,11 @@ export default function HistoryScreen({navigation} : Props) {
 
                  </Card>
 
-                 <Card flex={1} elevate br="$4" p="$4" bg="$purple2">
+                 <Card flex={1} elevate br="$4" p="$4" bg="$purple5">
 
-                   <Text fontSize="$8" fontWeight="600" mb="$1" color="$purple11">Avg Wait</Text>
+                   <Text fontSize="$2" fontWeight="600" mb="$1" color="$purple11">Avg Wait</Text>
 
-                   <Text fontSize="$8" fontWeight="bold" color="$purple11">{Math.round(avgWaitTime)}m</Text>
+                   <Text fontSize="$8" mt="$1" fontWeight="bold" color="$purple11">{Math.round(avgWaitTime)}m</Text>
 
                  </Card>
               </XStack>

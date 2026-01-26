@@ -2,7 +2,7 @@
 
 import { ScrollView , RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack , XStack , Text , Card , Button , Avatar , Circle , Input } from "tamagui";
+import { YStack , XStack , Text , Card , Button , Circle , Input } from "tamagui";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { UserTabScreenProps } from "@/src/types/navigation.types";

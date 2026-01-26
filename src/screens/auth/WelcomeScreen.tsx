@@ -16,7 +16,7 @@ export default function  WelcomeScreen({navigation} : Props) {
     
        {/* header part  */}
 
-          <YStack pt="$16" pb="$8" px="$6">
+          <YStack pt="$16" pb="$8" px="$6" mt="$6">
             {/* icon  */}
 
             <YStack ai="center" mb="$8">

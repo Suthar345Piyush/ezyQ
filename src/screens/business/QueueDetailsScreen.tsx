@@ -73,7 +73,7 @@ export default function QueueDetailScreen({navigation , route} : Props) {
 
       return (
             
-           <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}} edges={['bottom']}>
+           <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}} edges={["bottom"]}>
 
              <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
 
@@ -137,7 +137,7 @@ export default function QueueDetailScreen({navigation , route} : Props) {
   
               <YStack px="$6" mt="$-4" pb="$6">
 
-                <Card elevate br="$5" p="$4" bg="white" mb="$4">
+                <Card elevate br="$5" p="$4" bg="white" mb="$4" mt="$6">
                     <YStack gap="$3">
                       <Button size="$5" bg="$green10" br="$4" onPress={handleCallNext} pressStyle={{scale : 0.98}}>
 
