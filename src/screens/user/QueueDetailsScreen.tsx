@@ -6,10 +6,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack , XStack , Text , Card , Button , Circle , Separator } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { UserTabScreenProps } from '@/src/types/navigation.types';
+import { UserStackScreenProps } from '@/src/types/navigation.types';
 
 
-type Props = UserTabScreenProps<'QueueDetails'>;
+type Props = UserStackScreenProps<'QueueDetails'>;
 
 export default function QueueDetailsScreen({navigation , route} : Props) {
       
@@ -29,7 +29,7 @@ export default function QueueDetailsScreen({navigation , route} : Props) {
          totalReviews : 245,
          distance : "0.2km",
          address : "Connaught Place , New Delhi, 110001",
-         description : "Premium coffee shop with quick service and comformtable seating",
+         description : "Premium coffee shop with quick service and comfortable seating",
          currentNumber : 23,
          peopleWaiting : 12,
          avgWaitTime : 6,
@@ -121,7 +121,7 @@ export default function QueueDetailsScreen({navigation , route} : Props) {
 
 
         return (
-            <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}}>
+            <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}} edges={["bottom"]}>
                <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
 
                 {/* header part  */}
@@ -270,6 +270,7 @@ export default function QueueDetailsScreen({navigation , route} : Props) {
 
 
                     {/* queue status current  */}
+
 
                     <Card elevate br="$5" p="$5" bg="white" mb="$4"> 
                        <XStack ai="center" jc="space-between" mb="$4">
