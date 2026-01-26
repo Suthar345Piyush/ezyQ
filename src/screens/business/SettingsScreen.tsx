@@ -1,6 +1,4 @@
-// settings screen part here 
-
-
+// SettingsScreen.tsx
 import { ScrollView, Alert, Switch, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { YStack, XStack, Card, Text, Button, Circle, Separator, Theme } from "tamagui";
@@ -10,8 +8,6 @@ import { BusinessTabScreenProps } from "@/src/types/navigation.types";
 import { useAuthStore } from "@/src/stores/authStore";
 
 type Props = BusinessTabScreenProps<'Settings'>;
-
-
 
 export default function SettingsScreen({ navigation }: Props) {
   const { user, logout } = useAuthStore();
@@ -24,6 +20,9 @@ export default function SettingsScreen({ navigation }: Props) {
     darkMode: systemColorScheme === 'dark'
   });
 
+
+
+  // Update dark mode when system theme changes
 
 
   useEffect(() => {
@@ -43,6 +42,7 @@ export default function SettingsScreen({ navigation }: Props) {
           style: "destructive",
           onPress: () => {
             logout();
+          
           }
         }
       ]
@@ -54,8 +54,6 @@ export default function SettingsScreen({ navigation }: Props) {
   const toggleSetting = (key: keyof typeof settings) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
   };
-
-
 
   const settingsOptions = [
     {
@@ -105,7 +103,6 @@ export default function SettingsScreen({ navigation }: Props) {
 
 
 
-
   const accountOptions = [
     {
       icon: "person",
@@ -137,9 +134,9 @@ export default function SettingsScreen({ navigation }: Props) {
 
 
   return (
-  
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }} edges={["bottom"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       <ScrollView showsVerticalScrollIndicator={false}>
+
 
         {/* Header */}
 
@@ -165,6 +162,7 @@ export default function SettingsScreen({ navigation }: Props) {
           </XStack>
 
 
+
           {/* User Profile Card */}
 
 
@@ -188,10 +186,13 @@ export default function SettingsScreen({ navigation }: Props) {
           </Card>
         </YStack>
 
+
+
         <YStack px="$6" mt="$-4" pb="$6">
 
 
           {/* Settings Sections */}
+
 
 
           {settingsOptions.map((section, sectionIdx) => (
@@ -238,8 +239,8 @@ export default function SettingsScreen({ navigation }: Props) {
 
 
 
-          {/* Account Options */}
 
+          {/* Account Options */}
 
 
           <YStack mb="$4">
@@ -291,7 +292,6 @@ export default function SettingsScreen({ navigation }: Props) {
           </YStack>
 
 
-
           {/* Support & Help */}
 
 
@@ -332,7 +332,8 @@ export default function SettingsScreen({ navigation }: Props) {
 
 
 
-          {/* some app information part here */}
+
+          {/* App Info */}
 
 
 
@@ -347,8 +348,7 @@ export default function SettingsScreen({ navigation }: Props) {
 
 
 
-          {/* Logout Button  */}
-
+          {/* Logout Button */}
 
           <Button 
             size="$5" 
@@ -370,5 +370,3 @@ export default function SettingsScreen({ navigation }: Props) {
     </SafeAreaView>
   );
 }
-
-
