@@ -48,7 +48,9 @@ export type  UserStackParamList = {
     QueueDetails : {
        queueId : string | undefined;
     };
-    JoinQueue : undefined;
+    JoinQueue :  {
+       queueId : string | undefined;
+    };
 };
 
 
