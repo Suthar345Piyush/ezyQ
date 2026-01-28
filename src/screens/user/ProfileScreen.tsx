@@ -7,6 +7,7 @@ import { XStack , YStack , Text , Card , Button , Circle , Separator } from "tam
 import { Ionicons } from "@expo/vector-icons";
 import { UserTabScreenProps } from "@/src/types/navigation.types";
 import { useAuthStore } from "@/src/stores/authStore";
+import EditProfileScreen from "@/src/screens/user/EditProfileScreen";
 
 
 
@@ -113,9 +114,9 @@ export default function ProfileScreen({navigation} : Props) {
          switch(action) {
 
             case 'edit_profile':
-               Alert.alert('Edit Profile' , 'Feature coming soon');
-               break;
-
+                Alert.alert('Notifications' , 'Feature coming soon');
+                break;
+            
             case 'notifications':
                Alert.alert('Notifications' , 'Feature coming soon');
                break;
