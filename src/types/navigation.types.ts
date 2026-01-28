@@ -11,7 +11,7 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 
 export type RootStackParamList = {
    Auth : NavigatorScreenParams<AuthStackParamList>;
-   User : NavigatorScreenParams<UserTabParamList>;
+   User : NavigatorScreenParams<UserStackParamList>;
    Business : NavigatorScreenParams<BusinessStackParamList>;
 } 
 
@@ -52,7 +52,13 @@ export type  UserStackParamList = {
        queueId : string | undefined;
     };
     EditProfile : undefined;
+    Settings : undefined;
+    HelpSupport : undefined;
+    FindNearby : undefined;
+    ScanQR : undefined;
 };
+
+
 
 
 //business bottom tabs 
@@ -61,7 +67,7 @@ export type BusinessTabParamList = {
    Dashboard : undefined;
    Queues : undefined;
    Analytics : undefined;
-   Settings : undefined;
+   SettingsScreen : undefined;
 }
 
 

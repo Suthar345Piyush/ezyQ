@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { BusinessTabScreenProps } from "@/src/types/navigation.types";
 import { useAuthStore } from "@/src/stores/authStore";
 
-type Props = BusinessTabScreenProps<'Settings'>;
+type Props = BusinessTabScreenProps<'SettingsScreen'>;
 
 export default function SettingsScreen({ navigation }: Props) {
   const { user, logout } = useAuthStore();
