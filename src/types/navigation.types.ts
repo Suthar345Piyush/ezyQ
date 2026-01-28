@@ -51,6 +51,7 @@ export type  UserStackParamList = {
     JoinQueue :  {
        queueId : string | undefined;
     };
+    EditProfile : undefined;
 };
 
 
