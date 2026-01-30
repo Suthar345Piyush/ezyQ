@@ -221,12 +221,47 @@ export default function HelpSupportScreen({navigation} : Props) {
                          <YStack gap="$3">
 
                            {filteredFaqs.map((faq , index) => (
-                            
-                              <Card key={index}>
-                                 
+
+                              <Card key={index} br="$5" p="$4" bg="white" onPress={() => setExpandedFaq(expandedFaq === index  ? null : index)} pressStyle={{scale : 0.98}}>
+
+                                <XStack ai="center" jc="space-between" mb={expandedFaq === index ? '$3' : 0}>
+
+                                   <Text fontSize="$4" fontWeight="600" color="$gray12">
+                                      {faq.question}
+                                   </Text>
+
+                                   <Ionicons name={expandedFaq === index ? 'chevron-up' : 'chevron-down'} size={20} color="#9ca3af"/>
+
+                                </XStack>
+
+                                {expandedFaq === index && (
+
+                                   <Text fontSize="$3" color="$gray11" lineHeight={20}>
+                                    {faq.answer}
+                                    </Text>
+
+                                )}
+
                               </Card>
 
                            ))}
+
+                           {filteredFaqs.length === 0 && (
+
+                              <Card elevate br="$5" p="$8" bg="white" ai="center">
+
+                                 <Circle size={60} bg="$gray2" mb="$3">
+
+                                   <Ionicons name="search-outline" size={30} color="#9ca3af"/>
+
+                                 </Circle>
+
+                                 <Text fontSize="$4" fontWeight="600" color="$gray12">
+                                  No results found
+                                 </Text>
+
+                              </Card>
+                           )}
                            
                          </YStack>
 
@@ -234,22 +269,82 @@ export default function HelpSupportScreen({navigation} : Props) {
 
 
 
+                      {/* resources  */}
+
+                      <YStack mb="$4">
+
+                         <Text fontSize="$5" fontWeight="bold" color="$gray12" mb="$3">Resources</Text>
+
+                         <YStack>
+
+                           {resources.map((resource , index) =>
+                            (
+                              <Card key={index} elevate br="$5" p="$4" bg="white" pressStyle={{scale : 0.98}}>
+
+                                 <XStack ai="center" gap="$3">
+                                   
+                                    <Circle size={50} bg="$gray2">
+
+                                       <Ionicons name={resource.icon as any} size={26} color={resource.color}/>
+                                    </Circle>
+
+                                    <YStack flex={1}>
+
+                                       <Text fontSize="$4" fontWeight="600" color="$gray12">{resource.title}</Text>
+
+                                       <Text fontSize="$3" color="$gray11" mt="$1">
+                                        {resource.description}
+                                       </Text>
+                                    </YStack>
+
+                                    <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
+
+                                 </XStack>
+                                  
+                              </Card>
+                           ))}
+                         </YStack>
+                      </YStack>
+
+
+                      {/* 24/7 support section last */}
+
+
+                      <Card elevate br="$5" p="$5" bg="$blue2" mb="$4">
+
+                         <XStack ai="center" gap="$3">
+
+                           <Circle size={50} bg="$blue10">
+
+                             <Ionicons name="headset" size={26} color="white"/>
+                           </Circle>
+
+                           <YStack flex={1}>
+
+                             <Text fontSize="$5" fontWeight="bold" color="$blue11" mb="$1">Still need help?</Text>
+
+                             <Text fontSize="$3" color="$blue11" lineHeight={20}>
+                                Our Support team is available 24/7 to assist you
+                             </Text>
+
+                           </YStack>
+
+                         </XStack>
+
+
+                         <Button size="$4" bg="$blue10" br="$4" mt="$4" pressStyle={{scale : 0.98}}>
+                            
+                             <Text fontSize="$4" fontWeight="600" color="white">Contact Support</Text>
+
+                         </Button>
+
+                      </Card>
 
                 </YStack>
 
-
              </ScrollView>
-             
            </SafeAreaView>
 
         )
-
-
-
-
-
-
-
-
 
 }
