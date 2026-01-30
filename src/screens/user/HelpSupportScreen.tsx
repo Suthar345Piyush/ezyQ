@@ -1,11 +1,11 @@
 // help and support screen (USER)
 
-import { ScrollView , Linking , Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack , XStack , Card , Text , Circle , Input , Button } from "tamagui";
+import { UserStackScreenProps } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { UserStackScreenProps } from "@/src/types/navigation.types";
+import { Alert, Linking, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Input, Text, XStack, YStack } from "tamagui";
 
 
 type Props = UserStackScreenProps<'HelpSupport'>;
