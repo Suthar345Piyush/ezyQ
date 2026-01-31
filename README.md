@@ -1,6 +1,6 @@
 # EzyQ - Queue Management Made Easy 
 
-An mobile first Queue Management Application , built for both User's and Business's , through which they can manage their queue efficiently and business's can track their user's position in queue and user's can track their own position in queue as well.
+A mobile first Queue Management Application , built for both User's and Business's , through which they can manage their queue efficiently and business's can track their user's position in queue and user's can track their own position in queue as well.
 
 Initially at entry of the app , their are two choices go as user or go as business.
 
