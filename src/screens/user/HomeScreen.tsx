@@ -1,12 +1,12 @@
 // user's home screen 
 
-import { ScrollView , RefreshControl } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack , XStack , Text , Card , Button , Circle , Input } from "tamagui";
+import { useAuthStore } from "@/src/stores/authStore";
+import { UserTabScreenProps } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { UserTabScreenProps } from "@/src/types/navigation.types";
-import { useAuthStore } from "@/src/stores/authStore";
+import { RefreshControl, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Input, Text, XStack, YStack } from "tamagui";
 
 
 
@@ -233,7 +233,7 @@ export default function HomeScreen({navigation} : Props) {
 
                  <XStack gap="$3">
 
-                   <Card flex={1} elevate br="$5" p="$4" bg="$green2" onPress={() => navigation.    navigate('Explore')} pressStyle={{scale : 0.98}}>  
+                   <Card flex={1} elevate br="$5" p="$4" bg="$green2" onPress={() => navigation.navigate('FindNearby')} pressStyle={{scale : 0.98}}>  
 
                      <Circle size={48} bg="$green10" mb="$3">
                         <Ionicons name="location" size={24} color="white"/>
@@ -248,7 +248,7 @@ export default function HomeScreen({navigation} : Props) {
                    </Card>
 
 
-                   <Card flex={1} elevate br="$5" p="$4" bg="$purple2" onPress={() => {}} pressStyle={{scale : 0.98}}>
+                   <Card flex={1} elevate br="$5" p="$4" bg="$purple2" onPress={() => navigation.navigate('ScanQR')} pressStyle={{scale : 0.98}}>
 
                      <Circle size={48} bg="$purple10" mb="$3">
                        <Ionicons name="qr-code" size={24} color="white"/>

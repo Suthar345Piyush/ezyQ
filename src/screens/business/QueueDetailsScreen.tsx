@@ -1,11 +1,11 @@
 // queue details screen code 
 
-import { ScrollView , RefreshControl , Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack , XStack , Card , Text , Circle , Button , Separator } from "tamagui";
+import { BusinessStackScreenProps } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { BusinessStackScreenProps } from "@/src/types/navigation.types";
+import { Alert, RefreshControl, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Separator, Text, XStack, YStack } from "tamagui";
 
 
 
@@ -97,7 +97,7 @@ export default function QueueDetailScreen({navigation , route} : Props) {
 
                 </YStack>
 
-                <Button size="$3" chromeless onPress={() => navigation.navigate('Settings')} pressStyle={{opacity : 0.6}}>
+                <Button size="$3" chromeless onPress={() => navigation.navigate('SettingsScreen')} pressStyle={{opacity : 0.6}}>
 
                   <Ionicons name="settings" size={24} color='white'/>
                 </Button>

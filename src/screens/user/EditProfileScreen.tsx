@@ -1,23 +1,23 @@
 // edit profile screen 
 
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView , Alert , Image , TouchableOpacity } from "react-native";
-import { YStack , XStack , Card , Text , Button , Circle , Input } from "tamagui";
-import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { useAuthStore } from "@/src/stores/authStore";
 import { UserStackScreenProps } from "@/src/types/navigation.types";
+import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
+import { useState } from "react";
+import { Alert, Image, ScrollView, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Input, Text, XStack, YStack } from "tamagui";
 
 
 
 // calling user stack props for the screen rendering  
 
-type Props = UserStackScreenProps<'EditProfile'>;
+// type Props = UserStackScreenProps<'EditProfile'>;
 
 
 
-export default function EditProfileScreen( {navigation} : Props) {
+const  EditProfileScreen  = ( {navigation} : UserStackScreenProps<'EditProfile'>) => {
        
        // taking user from auth store for editing  
 
@@ -366,3 +366,6 @@ export default function EditProfileScreen( {navigation} : Props) {
 
       }
    }
+
+
+export default EditProfileScreen;

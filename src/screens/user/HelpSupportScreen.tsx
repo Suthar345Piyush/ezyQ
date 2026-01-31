@@ -134,7 +134,7 @@ export default function HelpSupportScreen({navigation} : Props) {
 
         return (
 
-           <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}}>
+           <SafeAreaView style={{flex : 1 , backgroundColor : '#f8f9fa'}} edges={["bottom"]}>
              <ScrollView showsVerticalScrollIndicator={false}>
                 
                    {/* header  */}
@@ -216,7 +216,7 @@ export default function HelpSupportScreen({navigation} : Props) {
 
                       <YStack mb="$4">
 
-                         <Text fontSize="$5" fontWeight="bold" color="$gray12" mb="$3">Frequently Asked Questions</Text>
+                         <Text fontSize="$5" fontWeight="bold" color="$gray12" mb="$3">FAQ's</Text>
 
                          <YStack gap="$3">
 
@@ -271,11 +271,11 @@ export default function HelpSupportScreen({navigation} : Props) {
 
                       {/* resources  */}
 
-                      <YStack mb="$4">
+                      <YStack mb="$4"> 
 
                          <Text fontSize="$5" fontWeight="bold" color="$gray12" mb="$3">Resources</Text>
 
-                         <YStack>
+                         <YStack gap="$3">
 
                            {resources.map((resource , index) =>
                             (

@@ -54,23 +54,23 @@ export default function FindNearbyScreen({navigation} : Props) {
       {
         id : '3',
         category : 'Restaurant',
-        distance : '0.2 km',
-        distanceValue : 0.2,
-        waitTime : 5,
-        peopleWaiting  : 6,
-        rating : 4.7,
+        distance : '0.8 km',
+        distanceValue : 0.8,
+        waitTime : 20,
+        peopleWaiting  : 15,
+        rating : 4.9,
         address : 'Cannaught Place  , Block A',
       },
 
       {
         id : '4',
-        name : 'Starbucks Coffeee',
+        name : 'Milano Cafe',
         category : 'Restaurant',
-        distance : '0.2 km',
-        distanceValue : 0.2,
-        waitTime : 5,
+        distance : '1.2 km',
+        distanceValue : 1.2,
+        waitTime : 10,
         peopleWaiting  : 6,
-        rating : 4.7,
+        rating : 4.6,
         address : 'Cannaught Place  , Block A',
       },
 
@@ -108,7 +108,7 @@ export default function FindNearbyScreen({navigation} : Props) {
           const address =  await Location.reverseGeocodeAsync({
              latitude :  currentLocation.coords.latitude,
 
-             longitude : currentLocation.coords.latitude,
+             longitude : currentLocation.coords.longitude,
             });
 
 
@@ -192,7 +192,7 @@ export default function FindNearbyScreen({navigation} : Props) {
 
 
    return (
-     <SafeAreaView style={{flex : 1, backgroundColor : "#f8f9fa"}}>
+     <SafeAreaView style={{flex : 1, backgroundColor : "#f8f9fa"}} edges={["bottom"]}>
 
         <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
 
@@ -308,11 +308,18 @@ export default function FindNearbyScreen({navigation} : Props) {
 
               {/* net result count  */}
 
-              <Text>
 
+              <Text fontSize="$4" fontWeight="600" color="$gray11" mb="$3">
+                {getSortedQueue().length} queues found nearby
+              </Text>
+
+
+                {/* nearby queues list code  */}
+
+            <YStack gap="$3">
                 {getSortedQueue().map((queue) => (
 
-                   <Card key={queue.id} elevate br="$5" p="$4" bg="white" onPress={() => navigation.navigate('QueueDetails' , {queueId : queue.id})} pressStyle={{scale : 0.98}}>
+                   <Card key={queue.id} elevate br="$6" p="$4" bg="white"  onPress={() => navigation.navigate('QueueDetails' , {queueId : queue.id})} pressStyle={{scale : 0.98}}>
 
 
                     <XStack ai="flex-start" gap="$3" mb="$3">
@@ -402,8 +409,9 @@ export default function FindNearbyScreen({navigation} : Props) {
 
                    )}
 
-              </Text>
+            
           </YStack>
+        </YStack>
  
         </ScrollView>
      </SafeAreaView>

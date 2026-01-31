@@ -1,13 +1,24 @@
+import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Ionicons } from "@expo/vector-icons";
 import { UserStackParamList, UserTabParamList } from "../types/navigation.types";
 
-import HomeScreen from "../screens/user/HomeScreen";
 import ExploreScreen from "../screens/user/ExploreScreen";
 import HistoryScreen from "../screens/user/HistoryScreen";
+import HomeScreen from "../screens/user/HomeScreen";
 import ProfileScreen from "../screens/user/ProfileScreen";
 import QueueDetailsScreen from "../screens/user/QueueDetailsScreen";
+
+import EditProfileScreen from "../screens/user/EditProfileScreen";
+import FindNearbyScreen from "../screens/user/FindNearbyScreen";
+import HelpSupportScreen from "../screens/user/HelpSupportScreen";
+import JoinQueueScreen from "../screens/user/JoinQueueScreen";
+import ScanQRScreen from "../screens/user/ScanQRScreen";
+import UserSettingsScreen from "../screens/user/SettingsScreen";
+
+
+
+
 
 const UserStack = createNativeStackNavigator<UserStackParamList>();
 const UserTab = createBottomTabNavigator<UserTabParamList>();
@@ -97,11 +108,53 @@ export default function UserNavigator() {
         component={QueueDetailsScreen}
         options={{ headerShown: true, title: "Queue Details" }}
       />
-      {/* <UserStack.Screen 
-        name="JoinQueues" 
-        component={JoinQueuesScreen}
+      <UserStack.Screen 
+        name="JoinQueue" 
+        component={JoinQueueScreen}
         options={{ headerShown: true, title: "Join Queue" }}
-      /> */}
+      />
+
+
+     <UserStack.Screen 
+        name="EditProfile" 
+        component={EditProfileScreen}
+        options={{ headerShown: true, title: "Edit Profile" }}
+      />
+
+
+     <UserStack.Screen 
+        name="Settings" 
+        component={UserSettingsScreen}
+        options={{ headerShown: true, title: "Join Queue" }}
+      />
+
+
+     <UserStack.Screen 
+        name="HelpSupport" 
+        component={HelpSupportScreen}
+        options={{ headerShown: true, title: "Join Queue" }}
+      />
+
+     <UserStack.Screen 
+        name="FindNearby" 
+        component={FindNearbyScreen}
+        options={{ headerShown: true, title: "Join Queue" }}
+      />
+
+
+     <UserStack.Screen 
+        name="ScanQR" 
+        component={ScanQRScreen}
+        options={{ headerShown: true, title: "Join Queue" }}
+      />  
+
+
+
+
     </UserStack.Navigator>
+
+
+
+
   );
 }
