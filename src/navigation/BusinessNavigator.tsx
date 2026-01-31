@@ -1,14 +1,14 @@
+import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Ionicons } from "@expo/vector-icons";
 import { BusinessStackParamList, BusinessTabParamList } from "../types/navigation.types";
 
-import DashboardScreen from "../screens/business/DashboardScreen";
-import QueuesScreen from "../screens/business/QueuesScreen";
+import CreateQueuesScreen from "@/src/screens/business/CreateQueueScreen";
 import AnalyticsScreen from "../screens/business/AnalyticsScreen";
-import SettingsScreen from "../screens/business/SettingsScreen";
+import DashboardScreen from "../screens/business/DashboardScreen";
 import QueueDetailsScreen from "../screens/business/QueueDetailsScreen";
-import CreateQueuesScreen from  "@/src/screens/business/CreateQueueScreen";
+import QueuesScreen from "../screens/business/QueuesScreen";
+import SettingsScreen from "../screens/business/SettingsScreen";
 
 const BusinessStack = createNativeStackNavigator<BusinessStackParamList>();
 const BusinessTab = createBottomTabNavigator<BusinessTabParamList>();

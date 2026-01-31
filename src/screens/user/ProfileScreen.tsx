@@ -1,13 +1,12 @@
 
 // profile screen code 
 
-import { ScrollView , Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { XStack , YStack , Text , Card , Button , Circle , Separator } from "tamagui";
-import { Ionicons } from "@expo/vector-icons";
-import { UserTabScreenProps } from "@/src/types/navigation.types";
 import { useAuthStore } from "@/src/stores/authStore";
-import EditProfileScreen from "@/src/screens/user/EditProfileScreen";
+import { UserTabScreenProps } from "@/src/types/navigation.types";
+import { Ionicons } from "@expo/vector-icons";
+import { Alert, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Separator, Text, XStack, YStack } from "tamagui";
 
 
 
@@ -114,7 +113,7 @@ export default function ProfileScreen({navigation} : Props) {
          switch(action) {
 
             case 'edit_profile':
-                Alert.alert('Notifications' , 'Feature coming soon');
+                 navigation.navigate('EditProfile');
                 break;
             
             case 'notifications':
@@ -130,11 +129,11 @@ export default function ProfileScreen({navigation} : Props) {
                break;
 
             case 'settings':
-               Alert.alert('Settings' , 'Feature coming soon');
+                navigation.navigate('Settings');
                break;
             
             case 'help':
-               Alert.alert('Help & Support' , 'Feature coming soon');
+               navigation.navigate('HelpSupport')
                break;
             
             case 'about':

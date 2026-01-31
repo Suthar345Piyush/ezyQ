@@ -1,11 +1,11 @@
 // join queue screen for user section 
 
-import { ScrollView , Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack , XStack , Card , Text , Button , Circle , Input , TextArea, ZStack, Separator } from "tamagui";
+import { UserStackScreenProps } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { UserStackScreenProps } from "@/src/types/navigation.types";
+import { Alert, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Input, Separator, Text, TextArea, XStack, YStack } from "tamagui";
 
 
 type Props = UserStackScreenProps<'JoinQueue'>;

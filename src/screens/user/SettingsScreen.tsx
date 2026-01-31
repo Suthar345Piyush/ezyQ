@@ -1,11 +1,11 @@
 // settings screen (USER)
 
-import { ScrollView , Switch , useColorScheme } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack , XStack , Card , Text , Button , Circle , Separator , Theme, Section } from "tamagui";
-import { Ionicons } from "@expo/vector-icons";
-import { useState , useEffect } from "react";
 import { UserStackScreenProps } from "@/src/types/navigation.types";
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import { ScrollView, Switch, useColorScheme } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Separator, Text, Theme, XStack, YStack } from "tamagui";
 
 
 type Props = UserStackScreenProps<'Settings'>;
@@ -114,7 +114,7 @@ export default function UserSettingsScreen({navigation} : Props) {
            <Theme name={settings.darkMode ? 'dark' : 'light'}>
 
               <SafeAreaView style={{flex : 1 , backgroundColor : settings.darkMode ? '#1a1a1a' : 
-            '#f8f9fa'}}>
+            '#f8f9fa'}} edges={["bottom"]}>
 
                  <ScrollView showsVerticalScrollIndicator={false}>
 

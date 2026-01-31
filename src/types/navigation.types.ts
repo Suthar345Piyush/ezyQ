@@ -1,10 +1,9 @@
 // type for navigation system 
 
-import type { NavigatorScreenParams } from "@react-navigation/native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import type { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { UserRole } from "./index";
-import type { CompositeScreenProps } from "@react-navigation/native";
 
 
 //root stack
@@ -46,10 +45,10 @@ export type UserTabParamList = {
 export type  UserStackParamList = {
     UserTabs : NavigatorScreenParams<UserTabParamList>;
     QueueDetails : {
-       queueId : string | undefined;
+       queueId : string;
     };
     JoinQueue :  {
-       queueId : string | undefined;
+       queueId : string;
     };
     EditProfile : undefined;
     Settings : undefined;
@@ -67,7 +66,7 @@ export type BusinessTabParamList = {
    Dashboard : undefined;
    Queues : undefined;
    Analytics : undefined;
-   SettingsScreen : undefined;
+   Settings : undefined;
 }
 
 

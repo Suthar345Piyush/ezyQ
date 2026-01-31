@@ -1,13 +1,13 @@
 // SettingsScreen.tsx
-import { ScrollView, Alert, Switch, useColorScheme } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack, XStack, Card, Text, Button, Circle, Separator, Theme } from "tamagui";
-import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
-import { BusinessTabScreenProps } from "@/src/types/navigation.types";
 import { useAuthStore } from "@/src/stores/authStore";
+import { BusinessTabScreenProps } from "@/src/types/navigation.types";
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import { Alert, ScrollView, Switch, useColorScheme } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Card, Circle, Separator, Text, XStack, YStack } from "tamagui";
 
-type Props = BusinessTabScreenProps<'SettingsScreen'>;
+type Props = BusinessTabScreenProps<'Settings'>;
 
 export default function SettingsScreen({ navigation }: Props) {
   const { user, logout } = useAuthStore();
@@ -134,7 +134,7 @@ export default function SettingsScreen({ navigation }: Props) {
 
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }} edges={["bottom"]}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
 
