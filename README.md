@@ -1,50 +1,150 @@
-# Welcome to your Expo app 👋
+# EzyQ - Queue Management Made Easy 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An mobile first Queue Management Application , built for both User's and Business's , through which they can manage their queue efficiently and business's can track their user's position in queue and user's can track their own position in queue as well.
 
-## Get started
+Initially at entry of the app , their are two choices go as user or go as business.
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+## Features (USER)
 
-2. Start the app
+- **Search Queues** : User can search for queue to it's nearby
+- **Scan QR** : User can scan an QR to join any queue
+- **Explore Queues** : Can explore all the queue nearby with all metrices(distance , current queue size , etc.)
+- **Queue Status** : User can check current status(active , paused , cancelled) of queue
+- **Queue History** : Can check previous joined queue data and all other metrics related to this
+- **Live Notifications** : User get's live notifications of his position in queue (underdevelopment)
+- **Personal Profile** : User can check his profile and set some specific feature according to his choice
 
-   ```bash
-   npx expo start
-   ```
 
-In the output, you'll find options to open the app in a
+## Features (BUSINESS)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **Dashboard** : A complete dashboard for business's with all essential metrics
+- **Create & Manage Queues** : Business's can create and manage queues 
+- **Queues History** : Business's can check queues that they've created and can maintain multiple queues at the same time 
+- **Analytics** : Queue analytics where customers served in a day , weekly status and all things related to it
+- **Settings** : Settings section where , business's can set settings according to their requirements
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Tech Stack
 
-When you're ready, run:
+- **Framework**: React , React Native , Expo 54
+- **Language**: TypeScript (strict mode)
+- **Navigation** : React Navigation
+- **Database**: SQLite (Expo-SQlite Plugin)
+- **Styling**: Tamag UI - For fast rendering on low end devices as well
+- **State**: Zustand
+- **TS-Validation**:  Zod
+- **Icons**: Expo-Ionicons
 
-```bash
-npm run reset-project
+
+## Project Structure
+
+```
+ezy0/
+├── src/
+│   ├── navigation/
+│   │   ├── AppNavigator.tsx
+│   │   ├── AuthNavigator.tsx
+│   │   ├── BusinessNavigator.tsx
+│   │   └── UserNavigator.tsx
+│   │
+│   ├── screens/
+│   │   ├── auth/
+│   │   │   ├── LoginScreen.tsx
+│   │   │   ├── OTPVerificationScreen.tsx       #dev only for now
+│   │   │   ├── RegisterScreen.tsx
+│   │   │   ├── RoleSelectionScreen.tsx
+│   │   │   └── WelcomeScreen.tsx
+│   │   │
+│   │   ├── business/
+│   │   │   ├── AnalyticsScreen.tsx
+│   │   │   ├── CreateQueueScreen.tsx
+│   │   │   ├── DashboardScreen.tsx
+│   │   │   ├── QueueDetailsScreen.tsx
+│   │   │   ├── QueuesScreen.tsx
+│   │   │   └── SettingsScreen.tsx
+│   │   │
+│   │   └── user/
+│   │       ├── EditProfileScreen.tsx
+│   │       ├── ExploreScreen.tsx
+│   │       ├── FindNearbyScreen.tsx
+│   │       ├── HelpSupportScreen.tsx
+│   │       ├── HistoryScreen.tsx
+│   │       ├── HomeScreen.tsx
+│   │       ├── JoinQueueScreen.tsx
+│   │       ├── ProfileScreen.tsx
+│   │       ├── QueueDetailsScreen.tsx
+│   │       ├── ScanQRScreen.tsx
+│   │       └── SettingsScreen.tsx
+│   │
+│   ├── services/
+│   │   ├── auth/
+│   │   │   └── googleAuth.service.ts
+│   │   │
+│   │   ├── database/
+│   │   │   ├── repositories/
+│   │   │   │   ├── QueueEntryRepository.ts
+│   │   │   │   ├── QueueRepository.ts
+│   │   │   │   └── UserRepository.ts
+│   │   │   └── database.service.ts
+│   │   │
+│   │   ├── email/
+│   │   │   └── resend.service.ts
+│   │   │
+│   │   └── stores/
+│   │       ├── authService.ts
+│   │       └── authStore.ts
+│   │
+│   ├── types/
+│   │   ├── index.ts
+│   │   └── navigation.types.ts
+│   │
+│   ├── utils/
+│   │   ├── index.ts
+│   │   └── seedDatabase.ts
+│   │
+│   ├── .env
+│   ├── .gitignore
+│   ├── app.config.js
+│   └── App.tsx
+│
+├── PROGRESS.md
+└── README.md
+
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+## Future Features (Roadmap)
 
-To learn more about developing your project with Expo, look at the following resources:
+- [ ] Implement OAuth 2.0
+- [ ] OTP Verification System (Resend)
+- [ ] Live queue position notifications
+- [ ] Redefine whole app UI
+- [ ] Queue Search from Map functionality
+- [ ] Feedback by User for particular queue
+- [ ] Payment integration for Business's
+- [ ] Soon publish on PlayStore
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Contributing
 
-## Join the community
+Contributions are welcome! Please follow these guidelines:
 
-Join our community of developers creating universal apps.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Write tests if applicable
+5. Submit a pull request
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## License
+
+MIT License - see LICENSE file for details
+---
+
+
+**Made with ❤️ by Piyush Suthar**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Suthar345Piyush)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/piyush-suthar-641a0826a/)
+[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://x.com/eigenpiyush)
+
+</div>

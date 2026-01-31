@@ -116,7 +116,7 @@ export default function EditProfileScreen({ navigation }: Props) {
 
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }} edges={["bottom"]}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
 
