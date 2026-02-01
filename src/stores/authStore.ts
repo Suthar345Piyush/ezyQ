@@ -1,16 +1,17 @@
 // authentication store complete code
 
-import {create} from "zustand";
+import { UserRepository } from '@/src/services/database/repositories/UserRepository';
+import { AuthService } from '@/src/stores/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from "zustand";
 import { User } from "../types";
-import {UserRepository} from '@/src/services/database/repositories/UserRepository';
-import {AuthService} from '@/src/stores/authService';
+
 
 const AUTH_STORAGE_KEY = '@ezyq_auth';
 const USER_STORAGE_KEY = '@ezyq_user';
 
 interface AuthState { 
-   user : User | null;
+   user : User | null; 
    isAuthenticated : boolean;
    isLoading : boolean;
    authToken : string | null;
@@ -29,7 +30,9 @@ interface AuthState {
 
    updateUser : (updates : Partial<User>) => Promise<void>;
 
-   clearAuth : () => Promise<void>
+   clearAuth : () => Promise<void>;
+
+   refreshUser : () => Promise<void>;
 
 };
 
@@ -336,6 +339,34 @@ export const useAuthStore = create<AuthState>((set , get) => ({
          }  catch(error) {
              console.error('Clear auth error:' , error);
          }  
+     },
+
+
+     // refresh user - refreshing latest user data from db and sync to state + async storage  
+
+     refreshUser : async () => {
+
+         try {
+             const {user} = get();
+
+             if(!user) return;
+
+             const dbUser = await UserRepository.getById(user.id);
+
+
+             if(dbUser) {
+                 await AsyncStorage.setItem(USER_STORAGE_KEY , JSON.stringify(dbUser));
+
+                 set({user : dbUser});
+
+                 console.log('User refreshed from DB');
+             }
+
+         } 
+         
+          catch(error) {
+             console.error('Refresh user error:' , error);
+         }
      },
 
 }));
