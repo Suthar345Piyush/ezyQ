@@ -1,4 +1,7 @@
-// EditProfileScreen.tsx
+// EditProfileScreen code here
+
+
+import UserRepository from "@/src/services/database/repositories/UserRepository";
 import { useAuthStore } from "@/src/stores/authStore";
 import { UserStackScreenProps } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,8 +11,10 @@ import { Alert, Image, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Card, Circle, Input, Text, XStack, YStack } from "tamagui";
 
-type Props = UserStackScreenProps<'EditProfile'>;
 
+
+
+type Props = UserStackScreenProps<'EditProfile'>;
 
 
 
@@ -20,7 +25,7 @@ export default function EditProfileScreen({ navigation }: Props) {
     name: user?.name || "",
     email: user?.email || "",
     phone: "+91 98765 43210",
-    location: "New Delhi, India"
+    location: "New Delhi, India",
   });
   
 
@@ -41,7 +46,7 @@ export default function EditProfileScreen({ navigation }: Props) {
 
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images' , 'videos'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -101,15 +106,45 @@ export default function EditProfileScreen({ navigation }: Props) {
 
 
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert('Success', 'Profile updated successfully!');
-      navigation.goBack();
-    }, 1000);
+
+    try  {
+
+        // updating user in db
+
+        const updates : any = {
+           name : formData.name,
+           phone : formData.phone,
+        };
+
+
+        // adding profile url if it is changed 
+
+        if(profileImage) {
+           updates.avatar_url = profileImage;
+        }
+
+        
+
+     // updating on the user side 
+
+     if(user?.id){
+        await  UserRepository.update(user.id , updates);
+
+
+        Alert.alert('Profile Updated' , 'Profile updated successfully');
+        navigation.goBack();
+     }    
+    } 
+
+    catch(error){
+        console.error('Error updating profile' , error);
+        Alert.alert('Error' , 'Failed to update profile. Please try again');
+    } 
+      finally {
+         setLoading(false);
+      }
   };
 
 
