@@ -1,8 +1,8 @@
 // queue entry repo code here 
 
 
+import { CreateQueueEntryDTO, QueueEntry, QueueEntryWithDetails } from "@/src/types";
 import { databaseService } from "../database.service";
-import { QueueEntry , CreateQueueEntryDTO , QueueEntryWithDetails, Queue} from "@/src/types";
 
 
 export class QueueEntryRepository {
@@ -19,7 +19,7 @@ export class QueueEntryRepository {
              
             `SELECT MAX(ticket_number) as max_ticket
              FROM queue_entries
-             WHERE queue_id ?`,
+             WHERE queue_id = ?`,
 
              [entryData.queue_id]
           );
@@ -38,13 +38,13 @@ export class QueueEntryRepository {
           await databaseService.runAsync(
 
             `INSERT INTO queue_entries(
-               id , queue_id , user_id , ticket_number , status , priority , joined_at , served_at , estimated_wait_time , notes , called_at , cancelled_at,
+               id , queue_id , user_id , ticket_number , status , priority , joined_at , called_at , served_at , cancelled_at , estimated_wait_time , notes
             ) VALUES (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)`,
 
             [
                entry.id,
-               entry.user_id,
                entry.queue_id,
+               entry.user_id,
                entry.ticket_number,
                entry.status,
                entry.priority,
@@ -113,7 +113,7 @@ export class QueueEntryRepository {
                   }
 
 
-                  sql += `ORDER BY qe.priority  DESC , qe.joined_at ASC`;
+                  sql += ` ORDER BY qe.priority  DESC , qe.joined_at ASC`;
 
 
                   return await databaseService.getAllAsync<QueueEntryWithDetails>(sql , params);
@@ -144,7 +144,7 @@ export class QueueEntryRepository {
 
           const userEntry = await databaseService.getFirstAsync<QueueEntry>(
 
-             `SELECT * FROM queue_entries WHERE queue_id = ? AND user_id = ? AND STATUS = "watiting"`,
+             `SELECT * FROM queue_entries WHERE queue_id = ? AND user_id = ? AND STATUS = 'watiting'`,
 
              [queueId , userId]
           );
@@ -172,13 +172,14 @@ export class QueueEntryRepository {
        //getting next person in queue
        
        static async getNextInQueue(queueId : string) : Promise<QueueEntryWithDetails | null> {
+
          return await databaseService.getFirstAsync<QueueEntryWithDetails>(
 
               `SELECT qe.*, u.name as user_name , u.email as user_email,
                  q.name as queue_name , q.status as queue_status
                  FROM queue_entries qe
-                 JOIN users u ON qe.user_id = u.id,
-                 JOIN queues q ON qe.queue_id = q.id,
+                 JOIN users u ON qe.user_id = u.id
+                 JOIN queues q ON qe.queue_id = q.id
                  WHERE qe.queue_id = ? AND qe.status = 'waiting'
                  ORDER BY qe.priority DESC ,  qe.joined_at ASC
                  LIMIT 1
@@ -208,7 +209,7 @@ export class QueueEntryRepository {
 
                `UPDATE queue_entries SET status = ? , ${statusField} = ? WHERE id = ?`,
 
-               [status , id , now]
+               [status , now , id]
              );
           }
 
@@ -305,8 +306,8 @@ export class QueueEntryRepository {
 
                 [
 
-                  entry.user_id,
                   entry.queue_id,
+                  entry.user_id,
                   entry.ticket_number,
                   Math.floor(waitTime / 1000 / 60),    // in minutes 
                   Math.floor(serviceTime / 1000 / 60),
@@ -342,7 +343,7 @@ export class QueueEntryRepository {
 
          const result = await databaseService.getFirstAsync<{count : number}>(
              
-             `SELECT COUNT(*) as count FROM queue_entries WHERE queue_id = ? AND status = "waiting"`,
+             `SELECT COUNT(*) as count FROM queue_entries WHERE queue_id = ? AND status = 'waiting'`,
 
              [queueId]
          )

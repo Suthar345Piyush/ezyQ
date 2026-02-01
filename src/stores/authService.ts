@@ -2,11 +2,12 @@
 // Updated with Resend email integration
 
 import { UserRepository } from '@/src/services/database/repositories/UserRepository';
+import { ResendEmailService } from '@/src/services/email/resend.service';
 import { User, UserRole } from '@/src/types/index';
 import { generateId } from '@/src/utils/index';
-import { ResendEmailService } from '@/src/services/email/resend.service';
 
 // In-memory OTP storage (use Redis in production)
+
 const otpStorage = new Map<string, { otp: string; expiresAt: number }>();
 
 export class AuthService {

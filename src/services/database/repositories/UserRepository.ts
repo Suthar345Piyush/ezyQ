@@ -1,7 +1,7 @@
 // user repo code here 
 
 import { databaseService } from "@/src/services/database/database.service";
-import { User , CreateUserDTO } from "@/src/types";
+import { CreateUserDTO, User } from "@/src/types";
 
 
 export class UserRepository {

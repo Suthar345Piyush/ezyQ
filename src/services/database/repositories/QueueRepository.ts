@@ -1,8 +1,8 @@
 // queue entry repo code logic 
 
 
+import { CreateQueueDTO, Queue, QueueStats, QueueWithBusiness } from "@/src/types";
 import { databaseService } from "../database.service";
-import { Queue , QueueWithBusiness , CreateQueueDTO , QueueStats } from "@/src/types";
 
 
 
@@ -26,7 +26,7 @@ export class QueueRepository {
 
        await databaseService.runAsync(
         `INSERT INTO queues (
-          id , business_id , name , description , category , location , longitude , latitide , max_capacity , current_capacity , avg_service_time , status , current_number , is_favorite , created_at , updated_at
+          id , business_id , name , description , category , location , longitude , latitude , max_capacity , current_capacity , avg_service_time , status , current_number , is_favorite , created_at , updated_at
         ) VALUES (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)`,
 
         [
@@ -124,7 +124,7 @@ export class QueueRepository {
       //checking if , category is mentioned then adding it's query to sql and pushing into parameters 
 
       if(category){
-        sql += `AND q.category = ?`;
+        sql += ` AND q.category = ?`;
         params.push(category);
       }
 
@@ -240,7 +240,7 @@ export class QueueRepository {
 
      const waitingCount = await databaseService.getFirstAsync<{count : number}> (
 
-       'SELECT COUNT(*) as count FROM queue_entries WHERE queue_id = ? AND status = "waiting"',
+       "SELECT COUNT(*) as count FROM queue_entries WHERE queue_id = ? AND status = 'waiting'",
        [id]
      );
 
@@ -342,7 +342,7 @@ export class QueueRepository {
      // getting nearby queues 
 
      static async getNearby(
-      latitide : number,
+      latitude : number,
       longitude : number,
       radiusKm : number = 5
      ) : Promise<Array<QueueWithBusiness & {distance : number}>>{
@@ -351,22 +351,22 @@ export class QueueRepository {
 
          return await databaseService.getAllAsync<QueueWithBusiness & {distance : number}>(
 
-           `SELECT q.*, u.name as business_name , u.email as business_email,
-           (6371 * acos(
-            cos(radians(?)) * cos(radians(q.latitude)) * 
-            cos(radians(q.longitude) - radians(?)) + 
-            sin(radians(?)) * sin(radians(q.latitude))
-           )) AS distance 
-           FROM queues q
-           JOIN users u ON q.business_id = u.id
-           WHERE q.latitude IS NOT NULL
-             AND q.longitude IS NOT NULL
-             AND q.status = 'active'
-             HAVING distance < ?
-             ORDER BY DISTANCE ASC
-           `,
+          `SELECT q.*, u.name as business_name, u.email as business_email,
+          (6371 * acos(
+            cos(? * 3.14159265358979 / 180) * cos(q.latitude * 3.14159265358979 / 180) *
+            cos((q.longitude - ?) * 3.14159265358979 / 180) +
+            sin(? * 3.14159265358979 / 180) * sin(q.latitude * 3.14159265358979 / 180)
+          )) AS distance
+          FROM queues q
+          JOIN users u ON q.business_id = u.id
+          WHERE q.latitude IS NOT NULL
+            AND q.longitude IS NOT NULL
+            AND q.status = 'active'
+          GROUP BY q.id
+          HAVING distance < ?
+          ORDER BY distance ASC`,
 
-           [latitide , longitude , radiusKm , latitide]
+           [latitude , longitude , latitude , radiusKm]
          );
      }
 
@@ -377,7 +377,7 @@ export class QueueRepository {
          
        return await databaseService.getAllAsync<QueueWithBusiness & {entry_count : number}>(
 
-           `SELECT q.*, u.name as business_name , u.email as business_email
+           `SELECT q.*, u.name as business_name , u.email as business_email,
             COUNT(qe.id) as entry_count
              FROM queues q
              JOIN users u ON q.business_id = u.id
@@ -436,7 +436,7 @@ export class QueueRepository {
 
        const activeQueues = await databaseService.getFirstAsync<{count : number}>(
 
-           'SELECT COUNT(*) as count FROM queues WHERE business_id = ? AND status = "active"',
+           "SELECT COUNT(*) as count FROM queues WHERE business_id = ? AND status = 'active'",
 
            [businessId]
        );
@@ -510,7 +510,7 @@ export class QueueRepository {
 
          await databaseService.runAsync(
 
-          'DELETE FROM queue_entries WHERE queue_id = ? AND status IN("waiting" , "called")',
+          "DELETE FROM queue_entries WHERE queue_id = ? AND status IN('waiting' , 'called')",
 
           [id]
          );

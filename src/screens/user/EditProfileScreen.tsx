@@ -1,7 +1,6 @@
 // EditProfileScreen code here
 
 
-import UserRepository from "@/src/services/database/repositories/UserRepository";
 import { useAuthStore } from "@/src/stores/authStore";
 import { UserStackScreenProps } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,7 +18,7 @@ type Props = UserStackScreenProps<'EditProfile'>;
 
 
 export default function EditProfileScreen({ navigation }: Props) {
-  const { user } = useAuthStore();
+  const { user , updateUser , refreshUser } = useAuthStore();
   
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -111,31 +110,30 @@ export default function EditProfileScreen({ navigation }: Props) {
 
     try  {
 
-        // updating user in db
-
-        const updates : any = {
-           name : formData.name,
-           phone : formData.phone,
-        };
+       const updates : any = {};
 
 
-        // adding profile url if it is changed 
+       if(formData.name !== user?.name) {
+          updates.name = formData.name;
+       }
 
-        if(profileImage) {
-           updates.avatar_url = profileImage;
-        }
+       if(formData.phone !== (user?.phone || '')) {
+          updates.phone = formData.phone;
+       }
 
-        
-
-     // updating on the user side 
-
-     if(user?.id){
-        await  UserRepository.update(user.id , updates);
+       if(profileImage && profileImage !== user?.avatar_url) {
+          updates.avatar_url = profileImage;
+       }
 
 
-        Alert.alert('Profile Updated' , 'Profile updated successfully');
-        navigation.goBack();
-     }    
+       if(Object.keys(updates).length > 0) {
+          await updateUser(updates);
+       }
+
+
+       Alert.alert('Success' , 'Profile updated successfully!');
+       navigation.goBack();
+       
     } 
 
     catch(error){

@@ -1,10 +1,13 @@
 
 // profile screen code 
 
+import UserRepository from "@/src/services/database/repositories/UserRepository";
 import { useAuthStore } from "@/src/stores/authStore";
 import { UserTabScreenProps } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, ScrollView } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
+import { useEffect, useState } from "react";
+import { Alert, Image, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Card, Circle, Separator, Text, XStack, YStack } from "tamagui";
 
@@ -22,7 +25,8 @@ const MENU_ITEMS = [
      title : 'Edit Profile',
      icon : 'person-outline',
      color : '$blue10',
-     action : 'edit_profile'
+     action : 'edit_profile',
+     screen : 'EditProfile'
    },
 
    {
@@ -54,7 +58,8 @@ const MENU_ITEMS = [
     title : 'Settings',
     icon : 'settings-outline',
     color : '$gray11',
-    action : 'settings'
+    action : 'settings',
+    screen : 'Settings',
   },
 
   {
@@ -62,7 +67,8 @@ const MENU_ITEMS = [
     title : 'Help & Support',
     icon : 'help-circle-outline',
     color : '$orange10',
-    action : 'help'
+    action : 'help',
+    screen : 'HelpSupport'
   },
 
   {
@@ -82,7 +88,129 @@ const MENU_ITEMS = [
 
 export default function ProfileScreen({navigation} : Props) {
     
-     const {user , logout} = useAuthStore();
+     const {user , logout , refreshUser} = useAuthStore();
+     const [profileImage , setProfileImage] = useState<string | null>(user?.avatar_url || null);
+     const [stats , setStats] = useState({
+        queuesJoined : 0,
+        completed : 0,
+        avgRating : 0,
+     });
+
+
+     useEffect(() => {
+        loadUserStats();
+     } , [user?.id]);
+
+     
+  // user queue stats function 
+
+     const loadUserStats = async() => {
+         if(user?.id) return;
+
+
+         try {
+           const userStats = await UserRepository.getUserStats(user?.id as any);
+
+           setStats({
+             queuesJoined : userStats.total_queue_joined,
+             completed : userStats.total_queue_joined,
+             avgRating : 4.8,
+           });
+         } 
+          catch(error) {
+             console.error('Error loading stats:' , error);
+          }
+     };
+
+
+     // handle image picker function 
+
+     const handleImagePicker = () => {
+        Alert.alert(
+           'Change Profile Picture',
+           'Choose an option',
+
+           [
+             {
+               text : 'Take Photo',
+               onPress : async () => {
+                   const {status} = await ImagePicker.requestCameraPermissionsAsync();
+
+
+                   if(status !== 'granted') {
+                      Alert.alert('Permission Denied' , 'Camera permission is required');
+                      return;
+                   }
+
+
+                   const result = await ImagePicker.launchCameraAsync({
+                      allowsEditing : true,
+                      aspect : [1 , 1],
+                      quality : 0.8
+                   });
+
+                   if(!result.canceled){
+                      await saveProfileImage(result.assets[0].uri);
+                   }
+               }
+             },
+
+
+             {
+               text : 'Choose from Gallery',
+               onPress : async () => {
+                  const {status} = await ImagePicker.requestCameraPermissionsAsync();
+
+                  if(status !== 'granted') {
+                     Alert.alert('Permission Denied' , 'Gallery permission is required');
+                     return;
+                  }
+
+
+                  const result = await ImagePicker.launchImageLibraryAsync({
+                     mediaTypes : ['images' , 'videos'],
+                     allowsEditing : true,
+                     aspect : [1 , 1],
+                     quality : 0.8
+                  });
+
+                  if(!result.canceled) {
+                     await saveProfileImage(result.assets[0].uri);
+                  }
+               }
+             },
+
+             {
+              text : 'Cancel',
+              style : 'cancel'
+             }
+           ]
+        );
+     };
+
+
+     // profile picture saving function 
+
+     const saveProfileImage = async(uri : string) => {
+
+          try {
+             if(user?.id) {
+
+                await UserRepository.update(user.id , {avatar_url : uri});
+                
+                await refreshUser();
+                Alert.alert('Success' , 'Profile picture updated successfully!');
+              
+             }
+             
+          } catch(error) {
+             console.error('Error updating profile picture:' , error);
+             Alert.alert('Error' , 'Failed to update profile picture');
+          }
+     };
+
+     
+
 
      // user logout function 
      
@@ -108,14 +236,16 @@ export default function ProfileScreen({navigation} : Props) {
 
      // selecting menu items  
 
-     const handleMenuPress = (action : string) => {
+     const handleMenuPress = (action : string , screen? : string) => {
+
+        if(screen) {
+           navigation.navigate(screen as any);
+           return;
+        }
          
+
          switch(action) {
 
-            case 'edit_profile':
-                 navigation.navigate('EditProfile');
-                break;
-            
             case 'notifications':
                Alert.alert('Notifications' , 'Feature coming soon');
                break;
@@ -126,14 +256,6 @@ export default function ProfileScreen({navigation} : Props) {
 
             case 'favorites':
                Alert.alert('Favorites' , 'Feature coming soon');
-               break;
-
-            case 'settings':
-                navigation.navigate('Settings');
-               break;
-            
-            case 'help':
-               navigation.navigate('HelpSupport')
                break;
             
             case 'about':
@@ -161,11 +283,39 @@ export default function ProfileScreen({navigation} : Props) {
 
                   <YStack ai="center" mb="$4">
 
-                    <Circle size={100} bg="$blue2" mb="$4">
+                    <TouchableOpacity onPress={handleImagePicker}>
+                      <YStack ai="center" position="relative">
 
-                      <Text fontSize="$10" fontWeight="bold" color="$blue10">{user?.name.charAt(0).toUpperCase() || 'U'}</Text>
+                         {
+                           profileImage ? (
+                               <Image source={{uri : profileImage}}
+                                style={{
+                                   width : 100,
+                                   height : 100,
+                                   borderRadius : 50,
+                                   marginBottom : 16
+                                }}
+                               />
+                           ) : (
 
-                    </Circle>
+                              <Circle size={100} bg="$blue2" mb="$4">
+                                 <Text fontSize="$10" fontWeight="bold" color="$blue10">
+                                   {user?.name?.charAt(0).toUpperCase() || 'U'}
+                                 </Text>
+                              </Circle>
+
+                           )}
+
+
+                           <Circle size={36} bg="$blue10" position="absolute" bottom={12} right={0} borderWidth={3} borderColor="white">
+
+                              <Ionicons name="camera" size={18} color="white" />
+                           </Circle>
+
+                      </YStack>
+                    </TouchableOpacity>
+
+                    
 
                     <Text fontSize="$7" fontWeight="bold" color="$gray12" mb="$1">{user?.name || 'Guest User'}</Text>
  
@@ -180,14 +330,14 @@ export default function ProfileScreen({navigation} : Props) {
                     {/* joined queue   */}
 
                      <YStack flex={1} ai="center" py="$3" bg="$blue2" br="$4">
-                       <Text fontSize="$7" fontWeight="bold" color="$blue11">25</Text>
+                       <Text fontSize="$7" fontWeight="bold" color="$blue11">{stats.queuesJoined}</Text>
                        <Text fontSize="$2" color="$blue11" fontWeight="600">Queues Joined</Text>
                      </YStack>
 
                      {/* completed queue  */}
 
                      <YStack flex={1} ai="center" py="$3" bg="$blue2" br="$4">
-                       <Text fontSize="$7" fontWeight="bold" color="$blue11">15</Text>
+                       <Text fontSize="$7" fontWeight="bold" color="$blue11">{stats.completed}</Text>
                        <Text fontSize="$2" color="$blue11" fontWeight="600">Completed</Text>
                      </YStack>
 
@@ -195,7 +345,7 @@ export default function ProfileScreen({navigation} : Props) {
                       {/* user's average rating   */}
 
                       <YStack flex={1} ai="center" py="$3" bg="$blue2" br="$4">
-                        <Text fontSize="$7" fontWeight="bold" color="$blue11">4.8</Text>
+                        <Text fontSize="$7" fontWeight="bold" color="$blue11">{stats.avgRating}</Text>
                         <Text fontSize="$2" color="$blue11" fontWeight="600">Avg Rating</Text>
                       </YStack>
 
@@ -215,7 +365,7 @@ export default function ProfileScreen({navigation} : Props) {
                   {MENU_ITEMS.map((item , index) => (
 
                        <YStack key={item.id}>
-                        <Button unstyled onPress={() => handleMenuPress(item.action)} pressStyle={{bg : '$gray2'}}>
+                        <Button unstyled onPress={() => handleMenuPress(item.action , item.screen)} pressStyle={{bg : '$gray2'}}>
 
                           <XStack ai="center" p="$4" gap="$3">
 
@@ -296,4 +446,8 @@ export default function ProfileScreen({navigation} : Props) {
 
 
 
+
+function refreshUser() {
+   throw new Error("Function not implemented.");
+}
 
