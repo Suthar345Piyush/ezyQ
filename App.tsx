@@ -1,16 +1,16 @@
 // app.tsx file  
 
-import { useEffect , useState } from "react";
-import { NavigationContainer, ThemeProvider } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { TamaguiProvider, Theme } from "tamagui";
+import { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { TamaguiProvider, Theme } from "tamagui";
 
-import tamaguiConfig from "./tamagui.config";
+import { Spinner, Text, YStack } from "tamagui";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { databaseService } from "./src/services/database/database.service";
 import { useAuthStore } from "./src/stores/authStore";
-import { YStack , Text , Spinner } from "tamagui";
+import tamaguiConfig from "./tamagui.config";
 
 
 export default function App() {
@@ -18,6 +18,7 @@ export default function App() {
     const [isAppReady , setIsAppReady] = useState(false);
     const [error , setError] = useState<string | null>(null);
     const initialize = useAuthStore(state => state.initialize);
+    
 
 
     useEffect(() => {
@@ -31,7 +32,7 @@ export default function App() {
 
             console.log('Initializing DB...');
 
-            await databaseService.intialize();
+            await databaseService.initialize();
 
             console.log('DB ready');
 

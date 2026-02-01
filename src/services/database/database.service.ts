@@ -37,7 +37,7 @@ const DB_VERSION = 1;
     
     //seperate initialize function 
 
-    public async intialize() : Promise<void> {
+    public async initialize() : Promise<void> {
 
        if(this.isInitialized) return;
 
